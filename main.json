@@ -109,7 +109,7 @@
 		"baseTemplatesUri": "https://raw.githubusercontent.com/khenidak/kubernetes-azure/master/",
 		"templateCreateMasters": "create-masters.json",
 		"templateCreateNodeGroup": "create-node-group.json",
-		"templateCreateNode" : "create-node",
+		"templateCreateNode" : "create-node.json",
 		
 		"clusterNameClean": "[replace(parameters('clusterName'),'-','')]",
 		"constAddonMasterStorageAccountPrefix": "m",
