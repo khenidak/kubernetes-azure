@@ -226,7 +226,6 @@
 			"mode": "incremental", 
 			"dependsOn": [
 				"[variables('mastersSALoop')]",
-				"[concat('Microsoft.Network/loadBalancers/', variables('loadBalancerName'))]",
 				"[concat('Microsoft.Network/virtualNetworks/', variables('clusterLBNameMaster'))]"
       		],
 			"templateLink": {
