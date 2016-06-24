@@ -218,7 +218,7 @@
 			}
 		},
 		  { 
-			"comments" : "createMasters",
+			"comments" : "Creates all masters calls into sub templates",
 			"apiVersion": "[variables('resourceApiVersion')]", 
 			"name": "nestedTemplate", 
 			"type": "Microsoft.Resources/deployments", 
