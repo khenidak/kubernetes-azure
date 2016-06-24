@@ -40,7 +40,7 @@
 			{
       		 "type": "Microsoft.Network/networkInterfaces",
       		 "name": "[concat('nicMinion-', copyIndex())]",
-      		 "apiVersion": "[variables('networkApiVersion')]",
+      		 "apiVersion": "[parameters('networkApiVersion')]",
       		 "location": "[resourceGroup().location]",
       		 "copy": {
         		"name": "masters-nics",

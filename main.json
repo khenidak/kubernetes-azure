@@ -241,7 +241,7 @@
 				"clusterVNETName": {"value": "[variables('clusterVNETName')]"},
 				"mastersSubnetName": {"value": "[variables('mastersSubnetName')]"},
 				"clusterLBNameMaster": {"value": "[variables('clusterLBNameMaster')]"},
-				"mastersCount": {"value": "[variables('mastersCount')]"}
+				"mastersCount": {"value": "[parameters('mastersCount')]"}
 				
 				} 
 			} 
