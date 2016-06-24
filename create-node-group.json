@@ -52,7 +52,7 @@
 				"count": "[parameters('nodesPerGroupCount')]"
 			},
 			"dependsOn": [
-				"[concat('Microsoft.Compute/availabilitySets/', variables('nodesGroupAvSetName')]"
+				"[concat('Microsoft.Compute/availabilitySets/', variables('nodesGroupAvSetName'))]"
 			],
 			"properties": {
 				"mode": "incremental",
