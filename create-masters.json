@@ -2,74 +2,160 @@
 	"$schema": "http://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json",
 	"contentVersion": "1.0.0.0",
 	"parameters": {
-		"computeApiVersion": {"type": "string" },
-		"networkApiVersion": {"type": "string" },
-		"storageApiVersion": {"type": "string" },
-		"clusterName": {"type": "string" },
-		"clusterNameClean": {"type": "string" },
+		"computeApiVersion": {
+			"type": "string"
+		},
+		"networkApiVersion": {
+			"type": "string"
+		},
+		"storageApiVersion": {
+			"type": "string"
+		},
+		"clusterName": {
+			"type": "string"
+		},
+		"clusterNameClean": {
+			"type": "string"
+		},
+		"clusterVNETName": {
+			"type": "string"
+		},
+		"mastersSubnetName": {
+			"type": "string"
+		},
+		"clusterLBNameMaster": {
+			"type": "string"
+		},
+		"mastersCount": {
+			"type": "int"
+		},
+
+		"mastersStorageAccountprefix": {"type": "string" },
+		"sshKeyPath": {"type": "string"},
+		"sshKeyData": {"type": "string"},
+		"adminUsername": {"type": "string"},
+		"mastersVMSku": {"type": "string"},
+		"coreOSType": {"type": "string"}
 		
-	    "clusterVNETName": {"type": "string" },
-		"mastersSubnetName": {"type": "string" },
-		
-		"clusterLBNameMaster": {"type": "string" },
 		
 		
 		
-		"mastersCount": {"type": "int" }
 		
+					
 		
 	},
 	"variables": {
-		"mastersAvSetName": "masters-avset"
-		
-
+		"mastersAvSetName": "masters-avset",
+		"CoreOs-Stable": {
+			"publisher": "CoreOs",
+			"offer": "CoreOs",
+			"sku": "Stable",
+			"version": "latest"
+		},
+		"CoreOs-Beta": {
+			"publisher": "CoreOS",
+			"offer": "CoreOs",
+			"sku": "beta",
+			"version": "latest"
+		},
+		 "imageReference": "[variables(parameters('coreOSType'))]"
 	},
 	"resources": [
-			{
-				"comments": "Masters Availability Set",
-				"type": "Microsoft.Compute/availabilitySets",
-				"name": "[variables('mastersAvSetName')]",
-				"apiVersion": "[parameters('computeApiVersion')]",
-				"location": "[resourceGroup().location]",
-				"properties": {
-					"platformFaultDomainCount": "3",
-					"platformUpdateDomainCount": "5"
-				}
+		{
+			"comments": "Masters Availability Set",
+			"type": "Microsoft.Compute/availabilitySets",
+			"name": "[variables('mastersAvSetName')]",
+			"apiVersion": "[parameters('computeApiVersion')]",
+			"location": "[resourceGroup().location]",
+			"properties": {
+				"platformFaultDomainCount": "3",
+				"platformUpdateDomainCount": "5"
+			}
+		},
+		{
+			"type": "Microsoft.Network/networkInterfaces",
+			"name": "[concat('nic-master-', copyIndex())]",
+			"apiVersion": "[parameters('networkApiVersion')]",
+			"location": "[resourceGroup().location]",
+			"copy": {
+				"name": "masters-nics",
+				"count": "[parameters('mastersCount')]"
 			},
-
-			{ 
-      		 "type": "Microsoft.Network/networkInterfaces",
-      		 "name": "[concat('nic-master-', copyIndex())]",
-      		 "apiVersion": "[parameters('networkApiVersion')]",
-      		 "location": "[resourceGroup().location]",
-      		 "copy": {
-        		"name": "masters-nics",
-        		"count": "[parameters('mastersCount')]"
-     		 },
-      			"properties": {
-        		"enableIPForwarding": true,
-        		"ipConfigurations": [
-          		{
-            		"name": "ipconfig1",
-            		"properties": {
-              		"privateIPAllocationMethod": "Static",
-              		"privateIPAddress": "[concat('10.0.0.', copyIndex(5))]",
-              		"subnet": {
-                	"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/',   parameters('mastersSubnetName'))]"
-              },
-              "loadBalancerBackendAddressPools": [
-				 {
-                            "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('clusterLBNameMaster'), '/backendAddressPools/', 'mastersPool')]"
-                          } 		
-                ]
-            }
-          }
-        ]
-      }
-    }
- 
-
-
-
+			"properties": {
+				"enableIPForwarding": true,
+				"ipConfigurations": [
+					{
+						"name": "ipconfig1",
+						"properties": {
+							"privateIPAllocationMethod": "Static",
+							"privateIPAddress": "[concat('10.0.0.', copyIndex(5))]",
+							"subnet": {
+								"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/',   parameters('mastersSubnetName'))]"
+							},
+							"loadBalancerBackendAddressPools": [
+								{
+									"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('clusterLBNameMaster'), '/backendAddressPools/', 'mastersPool')]"
+								}
+							]
+						}
+					}
+				]
+			}
+		},
+		{
+			"comments": "Cluster Master VMs",
+			"type": "Microsoft.Compute/virtualMachines",
+			"name": "[concat('master-', copyIndex())]",
+			"apiVersion": "[parameters('computeApiVersion')]",
+			"location": "[resourceGroup().location]",
+			"copy": {
+				"name": "masters-vms",
+				"count": "[parameters('mastersCount')]"
+			},
+			"dependsOn": [
+				"masters-nic"
+			],
+			"properties": {
+				"availabilitySet": {
+					"id": "[resourceId('Microsoft.Compute/availabilitySets/', variables('mastersAvSetName'))]"
+				},
+				"hardwareProfile": {
+					"vmSize": "[parameters('mastersVMSku')]"
+				},
+				"osProfile": {
+					"computerName": "[concat('master-', copyIndex())]",
+					"adminUsername": "[parameters('adminUsername')]",
+					"linuxConfiguration": {
+						"disablePasswordAuthentication": "true",
+						"ssh": {
+							"publicKeys": [
+								{
+									"path": "[parameters('sshKeyPath')]",
+									"keyData": "[parameters('sshKeyData')]"
+								}
+							]
+						}
+					}
+				},
+				"storageProfile": {
+					"imageReference": "[parameter('imageReference')]",
+					"osDisk": {
+						"name": "osdisk",
+						"vhd": {
+							"uri": "[concat('https://', concat(parameters('mastersStorageAccountprefix'), copyIndex()), '.blob.core.windows.net/vhds/', 'vm-', copyIndex(), 'OsDisk.vhd')]"
+						},
+						"caching": "ReadWrite",
+						"createOption": "FromImage"
+					}
+				},
+				"networkProfile": {
+					"networkInterfaces": [
+						{
+							"id": "[resourceId('Microsoft.Network/networkInterfaces/',concat('nic-master-', copyIndex()))]"
+						}
+					]
+				}
+			}
+		}
 	]
 }

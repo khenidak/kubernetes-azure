@@ -2,6 +2,26 @@
 	"$schema": "http://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json",
 	"contentVersion": "1.0.0.0",
 	"parameters": {
+		"adminUsername": {
+			"type": "string",
+			"metadata": {
+				"description": "Admin username on all VMs."
+			}
+		},
+		"sshKeyData": {
+			"type": "string",
+			"metadata": {
+				"description": "SSH rsa public key file as a string."
+			}
+		},
+		"coreOSType": {
+			"type": "string",
+			"defaultValue": "CoreOS-Stable",
+			"allowedValues": [
+				"CoreOS-Stable",
+				"CoreOS-Beta"
+			]
+		},
 		"clusterName": {
 			"type": "string",
 			"defaultValue": "my-kub-cluster",
@@ -17,7 +37,14 @@
 			},
 			"maxValue": 10
 		},
-		"nodesSAcount": {
+		"mastersVMSku": {
+			"type": "string",
+			"defaultValue": "Standard_A1",
+			"metadata": {
+				"description": "Size of VMs in the VM Scale Set."
+			}
+		},
+		"nodesSACount": {
 			"type": "int",
 			"defaultValue": 5,
 			"metadata": {
@@ -54,31 +81,28 @@
 	},
 	"variables": {
 		"baseTemplatesUri": "https://raw.githubusercontent.com/khenidak/kubernetes-azure/master/",
-		"templateCreateMasters" : "create-masters.json",
+		"templateCreateMasters": "create-masters.json",
 		"clusterNameClean": "[replace(parameters('clusterName'),'-','')]",
-		
 		"constAddonMasterStorageAccountPrefix": "m",
 		"mastersStorageAccountprefix": "[ concat(variables('constAddonMasterStorageAccountPrefix') ,   variables('clusterNameClean') ) ]",
 		"mastersSALoop": "mastersSALoop",
-		
 		"constAddonNodeStorageAccountPrefix": "n",
 		"nodesStorageAccountprefix": "[ concat(variables('constAddonNodeStorageAccountPrefix') ,   variables('clusterNameClean') ) ]",
 		"nodessSALoop": "nodeSALoop",
-
 		"clusterVNETName": "[concat(  variables('clusterNameClean') , '-vnet')]",
 		"mastersSubnetName": "masters-net",
 		"clusterVnetSpaceMain": "10.0.0.0/8",
 		"mastersSubnetSpace": "10.0.0.0/24",
 		"mastersSubnetRoutingTable": "[concat(variables('mastersSubnetName'), '-rtable' )]",
-		
 		"clusterPipName": "[concat(parameters('clusterName'), '-pip' )]",
 		"clusterLBName": "[concat(parameters('clusterName'), '-lb' )]",
 		"clusterLBNameMaster": "[concat(variables('clusterLBName'), '-masters' )]",
 		
+		"sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
 		"computeApiVersion": "2016-03-30",
 		"networkApiVersion": "2016-03-30",
 		"storageApiVersion": "2015-06-15",
-		"resourceApiVersion" : "2015-01-01"
+		"resourceApiVersion": "2015-01-01"
 	},
 	"resources": [
 		{
@@ -103,7 +127,7 @@
 			"apiVersion": "[variables('storageApiVersion')]",
 			"copy": {
 				"name": "[variables('nodessSALoop')]",
-				"count": "[parameters('nodesSAcount')]"
+				"count": "[parameters('nodesSACount')]"
 			},
 			"properties": {
 				"accountType": "[parameters('nodesStorageAccountType')]"
@@ -195,7 +219,7 @@
 			"apiVersion": "[variables('networkApiVersion')]",
 			"dependsOn": [
 				"[concat('Microsoft.Network/virtualNetworks/', variables('clusterVNETName'))]"
-				],
+			],
 			"properties": {
 				"frontendIPConfigurations": [
 					{
@@ -217,36 +241,67 @@
 				"inboundNatPools": []
 			}
 		},
-		  { 
-			"comments" : "Creates all masters calls into sub templates",
-			"type": "Microsoft.Resources/deployments", 
-			"apiVersion": "[variables('resourceApiVersion')]", 
-			"name": "nestedTemplate", 
+		{
+			"comments": "Creates all masters calls into sub templates",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('resourceApiVersion')]",
+			"name": "nestedTemplate",
 			"dependsOn": [
 				"[variables('mastersSALoop')]",
 				"[concat('Microsoft.Network/loadbalancers/', variables('clusterLBNameMaster'))]"
-      		],
-			"properties": { 
-			"mode": "incremental", 
-			
-			"templateLink": {
-				"uri": "[concat(variables('baseTemplatesUri'), variables('templateCreateMasters'))]",
-				"contentVersion": "1.0.0.0"
-			}, 
-			"parameters": { 
-				"computeApiVersion": {"value": "[variables('computeApiVersion')]"},
-				"networkApiVersion": {"value": "[variables('networkApiVersion')]"},
-				"storageApiVersion": {"value": "[variables('storageApiVersion')]"},
-				"clusterName": {"value": "[parameters('clusterName')]"},
-				"clusterNameClean": {"value": "[variables('clusterNameClean')]"},
-				"clusterVNETName": {"value": "[variables('clusterVNETName')]"},
-				"mastersSubnetName": {"value": "[variables('mastersSubnetName')]"},
-				"clusterLBNameMaster": {"value": "[variables('clusterLBNameMaster')]"},
-				"mastersCount": {"value": "[parameters('mastersCount')]"}
-				
-				} 
-			} 
-  		}
-		
+			],
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(variables('baseTemplatesUri'), variables('templateCreateMasters'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"computeApiVersion": {
+						"value": "[variables('computeApiVersion')]"
+					},
+					"networkApiVersion": {
+						"value": "[variables('networkApiVersion')]"
+					},
+					"storageApiVersion": {
+						"value": "[variables('storageApiVersion')]"
+					},
+					"clusterName": {
+						"value": "[parameters('clusterName')]"
+					},
+					"clusterNameClean": {
+						"value": "[variables('clusterNameClean')]"
+					},
+					"clusterVNETName": {
+						"value": "[variables('clusterVNETName')]"
+					},
+					"mastersSubnetName": {
+						"value": "[variables('mastersSubnetName')]"
+					},
+					"clusterLBNameMaster": {
+						"value": "[variables('clusterLBNameMaster')]"
+					},
+					"mastersCount": {
+						"value": "[parameters('mastersCount')]"
+					},
+					"mastersStorageAccountprefix": {
+						"value": "[variables('mastersStorageAccountprefix')]"
+					},
+					"sshKeyPath": {
+						"value": "[variables('sshKeyPath')]"
+					},
+					"sshKeyData": {
+						"value": "[parameters('sshKeyData')]"
+					},
+					"adminUsername": {
+						"value": "[parameters('adminUsername')]"
+					},
+					"mastersVMSku": {
+						"value": "[parameters('mastersVMSku')]"
+					},
+					"coreOSType" : {"value" : "parameters('coreOSType')"}
+				}
+			}
+		}
 	]
 }
