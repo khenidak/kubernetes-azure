@@ -1,0 +1,30 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"computeApiVersion": {"type": "string" },
+		"networkApiVersion": {"type": "string" },
+		"storageApiVersion": {"type": "string" },
+		"clusterName": {"type": "string" },
+		"clusterNameClean": {"type": "string" }
+	},
+	"variables": {
+		"mastersAvSetName": "masters-avset"
+		
+
+	},
+	"resources": [
+			{
+			"comments": "Masters Availability Set",
+			"type": "Microsoft.Compute/availabilitySets",
+			"name": "[variables('mastersAvSetName')]",
+			"apiVersion": "[variables('computeApiVersion')]",
+			"location": "[resourceGroup().location]",
+			"properties": {
+				"platformFaultDomainCount": "3",
+				"platformUpdateDomainCount": "5"
+			}
+		}
+
+	]
+}

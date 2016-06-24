@@ -53,30 +53,28 @@
 		}
 	},
 	"variables": {
-		"baseTemplatesUri" : "https://github.com/khenidak/kubernetes-azure/",
-
+		"baseTemplatesUri": "https://github.com/khenidak/kubernetes-azure/",
+		"templateCreateMasters" : "create-masters.json",
 		"clusterNameClean": "[replace(parameters('clusterName'),'-','')]",
 		"constAddonMasterStorageAccountPrefix": "m",
 		"mastersStorageAccountprefix": "[ concat(variables('constAddonMasterStorageAccountPrefix') ,   variables('clusterNameClean') ) ]",
 		"mastersSALoop": "mastersSALoop",
-
 		"constAddonNodeStorageAccountPrefix": "n",
 		"nodesStorageAccountprefix": "[ concat(variables('constAddonNodeStorageAccountPrefix') ,   variables('clusterNameClean') ) ]",
 		"nodessSALoop": "mastersSALoop",
-		
 		"clusterVNETName": "[concat(  variables('clusterNameClean') , '-vnet')]",
 		"mastersSubnetName": "masters-net",
 		"clusterVnetSpaceMain": "10.0.0.0/8",
 		"mastersSubnetSpace": "10.0.0.0/24",
-		"mastersSubnetRoutingTable" : "[concat(variables('mastersSubnetName'), '-rtable' )]",
-
-		"clusterPipName" : "[concat(parameters('clusterName'), '-pip' )]",
-        "clusterLBName" : "[concat(parameters('clusterName'), '-lb' )]",
-		"clusterLBNameMaster" : "[concat(variables('clusterLBName'), '-masters' )]",
-
+		"mastersSubnetRoutingTable": "[concat(variables('mastersSubnetName'), '-rtable' )]",
+		"clusterPipName": "[concat(parameters('clusterName'), '-pip' )]",
+		"clusterLBName": "[concat(parameters('clusterName'), '-lb' )]",
+		"clusterLBNameMaster": "[concat(variables('clusterLBName'), '-masters' )]",
+		
 		"computeApiVersion": "2016-03-30",
 		"networkApiVersion": "2016-03-30",
-		"storageApiVersion": "2015-06-15"
+		"storageApiVersion": "2015-06-15",
+		"resourceApiVersion" : ""
 	},
 	"resources": [
 		{
@@ -155,14 +153,13 @@
 			"location": "[resourceGroup().location]",
 			"apiVersion": "[variables('networkApiVersion')]",
 			"properties": {
-			"publicIPAllocationMethod": "Dynamic",
+				"publicIPAllocationMethod": "Dynamic",
 				"dnsSettings": {
-						"domainNameLabel": "[parameters('clusterName')]"
-					}
+					"domainNameLabel": "[parameters('clusterName')]"
 				}
-    	},
-
-		 {
+			}
+		},
+		{
 			"comments": "cluster edge loadbalancer",
 			"type": "Microsoft.Network/loadBalancers",
 			"name": "[variables('clusterLBName')]",
@@ -176,9 +173,8 @@
 					{
 						"name": "LoadBalancerFrontEnd",
 						"properties": {
-						"publicIPAddress": {
-							"id": "[resourceId('Microsoft.Network/publicIPAddresses/',  variables('clusterPipName'))]"
-
+							"publicIPAddress": {
+								"id": "[resourceId('Microsoft.Network/publicIPAddresses/',  variables('clusterPipName'))]"
 							}
 						}
 					}
@@ -193,16 +189,15 @@
 			"name": "[variables('clusterLBNameMaster')]",
 			"location": "[resourceGroup().location]",
 			"apiVersion": "[variables('networkApiVersion')]",
-			"dependsOn": [
-			],
+			"dependsOn": [],
 			"properties": {
 				"frontendIPConfigurations": [
 					{
 						"name": "LoadBalancerFrontend-internal",
 						"properties": {
-						"subnet": {
-							"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', variables('clusterVnetName'), '/subnets/', variables('mastersSubnetName'))]"
-						},
+							"subnet": {
+								"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', variables('clusterVNETName'), '/subnets/', variables('mastersSubnetName'))]"
+							},
 							"privateIPAddress": "10.0.0.4",
 							"privateIPAllocationMethod": "Static"
 						}
@@ -210,17 +205,32 @@
 				],
 				"backendAddressPools": [
 					{
-            			"name": "mastersPool"
-          			}
+						"name": "mastersPool"
+					}
 				],
 				"inboundNatPools": []
 			}
-		}
-
-
-
-
-
-
+		},
+		  { 
+			"comments" : "createMasters",
+			"apiVersion": "[variables('resourceApiVersion')]", 
+			"name": "nestedTemplate", 
+			"type": "Microsoft.Resources/deployments", 
+			"properties": { 
+			"mode": "incremental", 
+			"templateLink": {
+				"uri": "[concat(variables('templateCreateMasters'), variables('templateCreateMasters'))]",
+				"contentVersion": "1.0.0.0"
+			}, 
+			"parameters": { 
+				"computeApiVersion": {"value": "[variables('computeApiVersion')]"},
+				"networkApiVersion": {"value": "[variables('networkApiVersion')]"},
+				"storageApiVersion": {"value": "[variables('storageApiVersion')]"},
+				"clusterName": {"value": "[parameters('clusterName')]"},
+				"clusterNameClean": {"value": "[variables('clusterNameClean')]"}
+				} 
+			} 
+  		}
+		
 	]
 }
