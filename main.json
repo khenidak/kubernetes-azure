@@ -56,17 +56,21 @@
 		"baseTemplatesUri": "https://raw.githubusercontent.com/khenidak/kubernetes-azure/master/",
 		"templateCreateMasters" : "create-masters.json",
 		"clusterNameClean": "[replace(parameters('clusterName'),'-','')]",
+		
 		"constAddonMasterStorageAccountPrefix": "m",
 		"mastersStorageAccountprefix": "[ concat(variables('constAddonMasterStorageAccountPrefix') ,   variables('clusterNameClean') ) ]",
 		"mastersSALoop": "mastersSALoop",
+		
 		"constAddonNodeStorageAccountPrefix": "n",
 		"nodesStorageAccountprefix": "[ concat(variables('constAddonNodeStorageAccountPrefix') ,   variables('clusterNameClean') ) ]",
-		"nodessSALoop": "mastersSALoop",
+		"nodessSALoop": "nodeSALoop",
+
 		"clusterVNETName": "[concat(  variables('clusterNameClean') , '-vnet')]",
 		"mastersSubnetName": "masters-net",
 		"clusterVnetSpaceMain": "10.0.0.0/8",
 		"mastersSubnetSpace": "10.0.0.0/24",
 		"mastersSubnetRoutingTable": "[concat(variables('mastersSubnetName'), '-rtable' )]",
+		
 		"clusterPipName": "[concat(parameters('clusterName'), '-pip' )]",
 		"clusterLBName": "[concat(parameters('clusterName'), '-lb' )]",
 		"clusterLBNameMaster": "[concat(variables('clusterLBName'), '-masters' )]",
@@ -189,7 +193,9 @@
 			"name": "[variables('clusterLBNameMaster')]",
 			"location": "[resourceGroup().location]",
 			"apiVersion": "[variables('networkApiVersion')]",
-			"dependsOn": [],
+			"dependsOn": [
+				"[concat('Microsoft.Network/virtualNetworks/', variables('clusterVNETName'))]"
+				],
 			"properties": {
 				"frontendIPConfigurations": [
 					{
@@ -218,6 +224,11 @@
 			"type": "Microsoft.Resources/deployments", 
 			"properties": { 
 			"mode": "incremental", 
+			"dependsOn": [
+				"[variables('mastersSALoop')]",
+				"[concat('Microsoft.Network/loadBalancers/', variables('loadBalancerName'))]",
+				"[concat('Microsoft.Network/virtualNetworks/', variables('clusterLBNameMaster'))]"
+      		],
 			"templateLink": {
 				"uri": "[concat(variables('baseTemplatesUri'), variables('templateCreateMasters'))]",
 				"contentVersion": "1.0.0.0"
@@ -227,7 +238,12 @@
 				"networkApiVersion": {"value": "[variables('networkApiVersion')]"},
 				"storageApiVersion": {"value": "[variables('storageApiVersion')]"},
 				"clusterName": {"value": "[parameters('clusterName')]"},
-				"clusterNameClean": {"value": "[variables('clusterNameClean')]"}
+				"clusterNameClean": {"value": "[variables('clusterNameClean')]"},
+				"clusterVNETName": {"value": "[variables('clusterVNETName')]"},
+				"mastersSubnetName": {"value": "[variables('mastersSubnetName')]"},
+				"clusterLBNameMaster": {"value": "[variables('clusterLBNameMaster')]"},
+				"mastersCount": {"value": "[variables('mastersCount')]"}
+				
 				} 
 			} 
   		}

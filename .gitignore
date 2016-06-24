@@ -3,4 +3,4 @@ parameters.json
 
 .vscode
 
-gitsync.sh
+gitsync-and-deploy.sh

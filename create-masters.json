@@ -6,7 +6,18 @@
 		"networkApiVersion": {"type": "string" },
 		"storageApiVersion": {"type": "string" },
 		"clusterName": {"type": "string" },
-		"clusterNameClean": {"type": "string" }
+		"clusterNameClean": {"type": "string" },
+		
+	    "clusterVNETName": {"type": "string" },
+		"mastersSubnetName": {"type": "string" },
+		
+		"clusterLBNameMaster": {"type": "string" },
+		
+		
+		
+		"mastersCount": {"type": "int" }
+		
+		
 	},
 	"variables": {
 		"mastersAvSetName": "masters-avset"
@@ -15,16 +26,50 @@
 	},
 	"resources": [
 			{
-			"comments": "Masters Availability Set",
-			"type": "Microsoft.Compute/availabilitySets",
-			"name": "[variables('mastersAvSetName')]",
-			"apiVersion": "[parameters('computeApiVersion')]",
-			"location": "[resourceGroup().location]",
-			"properties": {
-				"platformFaultDomainCount": "3",
-				"platformUpdateDomainCount": "5"
-			}
-		}
+				"comments": "Masters Availability Set",
+				"type": "Microsoft.Compute/availabilitySets",
+				"name": "[variables('mastersAvSetName')]",
+				"apiVersion": "[parameters('computeApiVersion')]",
+				"location": "[resourceGroup().location]",
+				"properties": {
+					"platformFaultDomainCount": "3",
+					"platformUpdateDomainCount": "5"
+				}
+			},
+
+			{
+      		 "type": "Microsoft.Network/networkInterfaces",
+      		 "name": "[concat('nicMinion-', copyIndex())]",
+      		 "apiVersion": "[variables('networkApiVersion')]",
+      		 "location": "[resourceGroup().location]",
+      		 "copy": {
+        		"name": "masters-nics",
+        		"count": "[parameters('mastersCount')]"
+     		 },
+      			"properties": {
+        		"enableIPForwarding": true,
+        		"ipConfigurations": [
+          		{
+            		"name": "ipconfig1",
+            		"properties": {
+              		"privateIPAllocationMethod": "Static",
+              		"privateIPAddress": "[concat('10.0.0.', copyIndex(4))]",
+              		"subnet": {
+                	"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/',   parameters('mastersSubnetName'))]"
+              },
+              "loadBalancerBackendAddressPools": [
+				 {
+                            "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('clusterLBNameMaster'), '/backendAddressPools/', 'mastersPool')]"
+                          } 		
+                ]
+            }
+          }
+        ]
+      }
+    }
+
+
+
 
 	]
 }
