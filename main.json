@@ -116,7 +116,7 @@
 		"mastersSALoop": "mastersSALoop",
 		"constAddonNodeStorageAccountPrefix": "n",
 		"nodesStorageAccountprefix": "[ concat(variables('constAddonNodeStorageAccountPrefix') ,   variables('clusterNameClean') ) ]",
-		"nodessSALoop": "nodeSALoop",
+		"nodesSALoop": "nodeSALoop",
 		"clusterVNETName": "[concat(  variables('clusterNameClean') , '-vnet')]",
 		"mastersSubnetName": "masters-net",
 		"clusterVnetSpaceMain": "10.0.0.0/8",
@@ -154,7 +154,7 @@
 			"location": "[resourceGroup().location]",
 			"apiVersion": "[variables('storageApiVersion')]",
 			"copy": {
-				"name": "[variables('nodessSALoop')]",
+				"name": "[variables('nodesSALoop')]",
 				"count": "[parameters('nodesSACount')]"
 			},
 			"properties": {
@@ -307,7 +307,7 @@
 			"comments": "Creates node groups (each calls node creation)",
 			"type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('resourceApiVersion')]",
-			"name": "nestedTemplate",
+			"name": "nestedTemplate-nodegroup",
 			"dependsOn": [
 				"[variables('nodesSALoop')]",
 				"[concat('Microsoft.Network/virtualnetworks/', variables('clusterVNETName'))]"
