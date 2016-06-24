@@ -1,0 +1,226 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"clusterName": {
+			"type": "string",
+			"defaultValue": "my-kub-cluster",
+			"metadata": {
+				"description": "cluster name"
+			}
+		},
+		"mastersCount": {
+			"type": "int",
+			"defaultValue": 5,
+			"metadata": {
+				"description": "Masters count (each runs etcd, each on a storage account, choose accordingly)"
+			},
+			"maxValue": 10
+		},
+		"nodesSAcount": {
+			"type": "int",
+			"defaultValue": 5,
+			"metadata": {
+				"description": "Storage accounts used by kuberenetes nodes vms (distributed on)"
+			},
+			"maxValue": 35
+		},
+		"mastersStorageAccountType": {
+			"type": "string",
+			"defaultValue": "Standard_LRS",
+			"allowedValues": [
+				"Standard_LRS",
+				"Standard_GRS",
+				"Standard_ZRS",
+				"Premium_LRS"
+			],
+			"metadata": {
+				"description": "Storage Account type for nodes VM"
+			}
+		},
+		"nodesStorageAccountType": {
+			"type": "string",
+			"defaultValue": "Standard_LRS",
+			"allowedValues": [
+				"Standard_LRS",
+				"Standard_GRS",
+				"Standard_ZRS",
+				"Premium_LRS"
+			],
+			"metadata": {
+				"description": "Storage Account type by nodes VM"
+			}
+		}
+	},
+	"variables": {
+		"baseTemplatesUri" : "https://github.com/khenidak/kubernetes-azure/",
+
+		"clusterNameClean": "[replace(parameters('clusterName'),'-','')]",
+		"constAddonMasterStorageAccountPrefix": "m",
+		"mastersStorageAccountprefix": "[ concat(variables('constAddonMasterStorageAccountPrefix') ,   variables('clusterNameClean') ) ]",
+		"mastersSALoop": "mastersSALoop",
+
+		"constAddonNodeStorageAccountPrefix": "n",
+		"nodesStorageAccountprefix": "[ concat(variables('constAddonNodeStorageAccountPrefix') ,   variables('clusterNameClean') ) ]",
+		"nodessSALoop": "mastersSALoop",
+		
+		"clusterVNETName": "[concat(  variables('clusterNameClean') , '-vnet')]",
+		"mastersSubnetName": "masters-net",
+		"clusterVnetSpaceMain": "10.0.0.0/8",
+		"mastersSubnetSpace": "10.0.0.0/24",
+		"mastersSubnetRoutingTable" : "[concat(variables('mastersSubnetName'), '-rtable' )]",
+
+		"clusterPipName" : "[concat(parameters('clusterName'), '-pip' )]",
+        "clusterLBName" : "[concat(parameters('clusterName'), '-lb' )]",
+		"clusterLBNameMaster" : "[concat(variables('clusterLBName'), '-masters' )]",
+
+		"computeApiVersion": "2016-03-30",
+		"networkApiVersion": "2016-03-30",
+		"storageApiVersion": "2015-06-15"
+	},
+	"resources": [
+		{
+			"comments": "Storage accounts used by master, one each",
+			"type": "Microsoft.Storage/storageAccounts",
+			"name": "[concat( variables('mastersStorageAccountprefix'), copyIndex() )]",
+			"location": "[resourceGroup().location]",
+			"apiVersion": "[variables('storageApiVersion')]",
+			"copy": {
+				"name": "[variables('mastersSALoop')]",
+				"count": "[parameters('mastersCount')]"
+			},
+			"properties": {
+				"accountType": "[parameters('mastersStorageAccountType')]"
+			}
+		},
+		{
+			"comments": "Storage accounts used by nodes, distributed",
+			"type": "Microsoft.Storage/storageAccounts",
+			"name": "[concat( variables('nodesStorageAccountprefix'), copyIndex() )]",
+			"location": "[resourceGroup().location]",
+			"apiVersion": "[variables('storageApiVersion')]",
+			"copy": {
+				"name": "[variables('nodessSALoop')]",
+				"count": "[parameters('nodesSAcount')]"
+			},
+			"properties": {
+				"accountType": "[parameters('nodesStorageAccountType')]"
+			}
+		},
+		{
+			"comments": "Routing table - attached to masters subnet",
+			"type": "Microsoft.Network/routeTables",
+			"apiVersion": "[variables('networkApiVersion')]",
+			"name": "[variables('mastersSubnetRoutingTable')]",
+			"location": "[resourceGroup().location]",
+			"tags": {
+				"displayName": "masters - Nodes"
+			},
+			"properties": {
+				"routes": []
+			}
+		},
+		{
+			"comments": "Cluster vnet",
+			"type": "Microsoft.Network/virtualNetworks",
+			"name": "[variables('clusterVNETName')]",
+			"location": "[resourceGroup().location]",
+			"apiVersion": "[variables('networkApiVersion')]",
+			"dependsOn": [
+				"[concat('Microsoft.Network/routeTables/', variables('mastersSubnetRoutingTable'))]"
+			],
+			"properties": {
+				"addressSpace": {
+					"addressPrefixes": [
+						"[variables('clusterVnetSpaceMain')]"
+					]
+				},
+				"subnets": [
+					{
+						"name": "[variables('mastersSubnetName')]",
+						"properties": {
+							"addressPrefix": "[variables('mastersSubnetSpace')]",
+							"routeTable": {
+								"id": "[resourceId('Microsoft.Network/routeTables/',  variables('mastersSubnetRoutingTable'))]"
+							}
+						}
+					}
+				]
+			}
+		},
+		{
+			"comments": "public ip for the cluster, attached to the edge LB",
+			"type": "Microsoft.Network/publicIPAddresses",
+			"name": "[variables('clusterPipName')]",
+			"location": "[resourceGroup().location]",
+			"apiVersion": "[variables('networkApiVersion')]",
+			"properties": {
+			"publicIPAllocationMethod": "Dynamic",
+				"dnsSettings": {
+						"domainNameLabel": "[parameters('clusterName')]"
+					}
+				}
+    	},
+
+		 {
+			"comments": "cluster edge loadbalancer",
+			"type": "Microsoft.Network/loadBalancers",
+			"name": "[variables('clusterLBName')]",
+			"location": "[resourceGroup().location]",
+			"apiVersion": "[variables('networkApiVersion')]",
+			"dependsOn": [
+				"[concat('Microsoft.Network/publicIPAddresses/', variables('clusterPipName'))]"
+			],
+			"properties": {
+				"frontendIPConfigurations": [
+					{
+						"name": "LoadBalancerFrontEnd",
+						"properties": {
+						"publicIPAddress": {
+							"id": "[resourceId('Microsoft.Network/publicIPAddresses/',  variables('clusterPipName'))]"
+
+							}
+						}
+					}
+				],
+				"backendAddressPools": [],
+				"inboundNatPools": []
+			}
+		},
+		{
+			"comments": "masters loadbalancer - multi vip on LBs is currently in preview. once GA you can use one LB for everything",
+			"type": "Microsoft.Network/loadBalancers",
+			"name": "[variables('clusterLBNameMaster')]",
+			"location": "[resourceGroup().location]",
+			"apiVersion": "[variables('networkApiVersion')]",
+			"dependsOn": [
+			],
+			"properties": {
+				"frontendIPConfigurations": [
+					{
+						"name": "LoadBalancerFrontend-internal",
+						"properties": {
+						"subnet": {
+							"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', variables('clusterVnetName'), '/subnets/', variables('mastersSubnetName'))]"
+						},
+							"privateIPAddress": "10.0.0.4",
+							"privateIPAllocationMethod": "Static"
+						}
+					}
+				],
+				"backendAddressPools": [
+					{
+            			"name": "mastersPool"
+          			}
+				],
+				"inboundNatPools": []
+			}
+		}
+
+
+
+
+
+
+	]
+}
