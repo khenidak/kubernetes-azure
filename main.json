@@ -307,7 +307,7 @@
 			"comments": "Creates node groups (each calls node creation)",
 			"type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('resourceApiVersion')]",
-			"name": "nestedTemplate-nodegroup",
+			"name": "[concat('create-node-group', copyIndex())]",
 			"copy": {
 				"name": "nodeGroupsLoop",
 				"count": "[parameters('nodesGroupCount')]"
