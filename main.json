@@ -308,6 +308,10 @@
 			"type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('resourceApiVersion')]",
 			"name": "nestedTemplate-nodegroup",
+			"copy": {
+				"name": "create-node-groups",
+				"count": "[parameters('mastersCount')]"
+			},
 			"dependsOn": [
 				"[variables('nodesSALoop')]",
 				"[concat('Microsoft.Network/virtualnetworks/', variables('clusterVNETName'))]"
