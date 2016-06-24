@@ -309,8 +309,8 @@
 			"apiVersion": "[variables('resourceApiVersion')]",
 			"name": "nestedTemplate-nodegroup",
 			"copy": {
-				"name": "create-node-groups",
-				"count": "[parameters('mastersCount')]"
+				"name": "nodeGroupsLoop",
+				"count": "[parameters('nodesGroupCount')]"
 			},
 			"dependsOn": [
 				"[variables('nodesSALoop')]",
