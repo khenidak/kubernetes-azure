@@ -48,7 +48,7 @@
 						"dependsOn": [],
 						"location": "[resourceGroup().location]",
 						"properties": {
-							"addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 4) , '.', parameters('nodeIndex'), '.0', '/16')]"
+							"addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 4) , '.', parameters('nodeIndex'), '.0', '/24')]"
 						}
     			}
 
