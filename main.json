@@ -37,6 +37,32 @@
 			},
 			"maxValue": 10
 		},
+		"nodesPerGroupCount": {
+			"type": "int",
+			"defaultValue": 5,
+			"metadata": {
+				"description": "Node count per node-group, max allowed 255"
+			},
+			"maxValue": 255
+		},
+		"nodesGroupCount": {
+			"type": "int",
+			"defaultValue": 2,
+			"metadata": {
+				"description": "node group count (each is an availbility  set)"
+			},
+			"maxValue": 255
+		},
+
+		"nodsVMSku": {
+			"type": "string",
+			"defaultValue": "Standard_A1",
+			"metadata": {
+				"description": "Size of VMs in the node group VM Scale Set."
+			}
+		},
+
+
 		"mastersVMSku": {
 			"type": "string",
 			"defaultValue": "Standard_A1",
@@ -82,6 +108,8 @@
 	"variables": {
 		"baseTemplatesUri": "https://raw.githubusercontent.com/khenidak/kubernetes-azure/master/",
 		"templateCreateMasters": "create-masters.json",
+		"templateCreateNodeGroup": "create-node-group.json",
+		
 		"clusterNameClean": "[replace(parameters('clusterName'),'-','')]",
 		"constAddonMasterStorageAccountPrefix": "m",
 		"mastersStorageAccountprefix": "[ concat(variables('constAddonMasterStorageAccountPrefix') ,   variables('clusterNameClean') ) ]",
@@ -257,48 +285,55 @@
 					"contentVersion": "1.0.0.0"
 				},
 				"parameters": {
-					"computeApiVersion": {
-						"value": "[variables('computeApiVersion')]"
-					},
-					"networkApiVersion": {
-						"value": "[variables('networkApiVersion')]"
-					},
-					"storageApiVersion": {
-						"value": "[variables('storageApiVersion')]"
-					},
-					"clusterName": {
-						"value": "[parameters('clusterName')]"
-					},
-					"clusterNameClean": {
-						"value": "[variables('clusterNameClean')]"
-					},
-					"clusterVNETName": {
-						"value": "[variables('clusterVNETName')]"
-					},
-					"mastersSubnetName": {
-						"value": "[variables('mastersSubnetName')]"
-					},
-					"clusterLBNameMaster": {
-						"value": "[variables('clusterLBNameMaster')]"
-					},
-					"mastersCount": {
-						"value": "[parameters('mastersCount')]"
-					},
-					"mastersStorageAccountprefix": {
-						"value": "[variables('mastersStorageAccountprefix')]"
-					},
-					"sshKeyPath": {
-						"value": "[variables('sshKeyPath')]"
-					},
-					"sshKeyData": {
-						"value": "[parameters('sshKeyData')]"
-					},
-					"adminUsername": {
-						"value": "[parameters('adminUsername')]"
-					},
-					"mastersVMSku": {
-						"value": "[parameters('mastersVMSku')]"
-					},
+					"computeApiVersion": {"value": "[variables('computeApiVersion')]"},
+					"networkApiVersion": {"value": "[variables('networkApiVersion')]"},
+					"storageApiVersion": {"value": "[variables('storageApiVersion')]"},
+					"clusterName": {"value": "[parameters('clusterName')]"},
+					"clusterNameClean": {"value": "[variables('clusterNameClean')]"},
+					"clusterVNETName": {"value": "[variables('clusterVNETName')]"},
+					"mastersSubnetName": {"value": "[variables('mastersSubnetName')]"},
+					"clusterLBNameMaster": {"value": "[variables('clusterLBNameMaster')]"},
+					"mastersCount": {"value": "[parameters('mastersCount')]"},
+					"mastersStorageAccountprefix": {"value": "[variables('mastersStorageAccountprefix')]"},
+					"sshKeyPath": {"value": "[variables('sshKeyPath')]"},
+					"sshKeyData": {"value": "[parameters('sshKeyData')]"},
+					"adminUsername": {"value": "[parameters('adminUsername')]"},
+					"mastersVMSku": {"value": "[parameters('mastersVMSku')]"},
+					"coreOSType" : {"value" : "[parameters('coreOSType')]"}
+				}
+			}
+		},
+		{
+			"comments": "Creates node groups (each calls node creation)",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('resourceApiVersion')]",
+			"name": "nestedTemplate",
+			"dependsOn": [
+				"[variables('nodesSALoop')]",
+				"[concat('Microsoft.Network/virtualnetworks/', variables('clusterVNETName'))]"
+			],
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(variables('baseTemplatesUri'), variables('templateCreateNodeGroup'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"computeApiVersion": {"value": "[variables('computeApiVersion')]"},
+					"networkApiVersion": {"value": "[variables('networkApiVersion')]"},
+					"storageApiVersion": {"value": "[variables('storageApiVersion')]"},
+					"clusterName": {"value": "[parameters('clusterName')]"},
+					"clusterNameClean": {"value": "[variables('clusterNameClean')]"},
+					"clusterVNETName": {"value": "[variables('clusterVNETName')]"},
+					"nodesStorageAccountprefix": {"value": "[variables('nodesStorageAccountprefix')]"},
+					
+					"nodesPerGroupCount": {"value": "[parameters('nodesPerGroupCount')]"},
+					"nodeGroupIndex" : {"value": "[copyIndex()]"},
+
+					"sshKeyPath": {"value": "[variables('sshKeyPath')]"},
+					"sshKeyData": {"value": "[parameters('sshKeyData')]"},
+					"adminUsername": {"value": "[parameters('adminUsername')]"},
+					"nodesVMSku": {"value": "[parameters('nodesVMSku')]"},
 					"coreOSType" : {"value" : "[parameters('coreOSType')]"}
 				}
 			}

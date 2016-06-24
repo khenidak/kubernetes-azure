@@ -2,33 +2,15 @@
 	"$schema": "http://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json",
 	"contentVersion": "1.0.0.0",
 	"parameters": {
-		"computeApiVersion": {
-			"type": "string"
-		},
-		"networkApiVersion": {
-			"type": "string"
-		},
-		"storageApiVersion": {
-			"type": "string"
-		},
-		"clusterName": {
-			"type": "string"
-		},
-		"clusterNameClean": {
-			"type": "string"
-		},
-		"clusterVNETName": {
-			"type": "string"
-		},
-		"mastersSubnetName": {
-			"type": "string"
-		},
-		"clusterLBNameMaster": {
-			"type": "string"
-		},
-		"mastersCount": {
-			"type": "int"
-		},
+		"computeApiVersion": {"type": "string"},
+		"networkApiVersion": {"type": "string"},
+		"storageApiVersion": {"type": "string"},
+		"clusterName": {"type": "string"},
+		"clusterNameClean": {"type": "string"},
+		"clusterVNETName": {"type": "string"},
+		"mastersSubnetName": {"type": "string"},
+		"clusterLBNameMaster": {"type": "string"},
+		"mastersCount": {"type": "int"},
 
 		"mastersStorageAccountprefix": {"type": "string" },
 		"sshKeyPath": {"type": "string"},

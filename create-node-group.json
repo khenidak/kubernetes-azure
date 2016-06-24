@@ -1,0 +1,54 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"computeApiVersion": {"type": "string"},
+		"networkApiVersion": {"type": "string"},
+		"storageApiVersion": {"type": "string"},
+		"clusterName": {"type": "string"},
+		"clusterNameClean": {"type": "string"},
+		"clusterVNETName": {"type": "string"},
+		
+		"nodesSACount": {"type": "int"},
+		"nodesPerGroupCount": {"type": "int"},
+		"nodesStorageAccountprefix": {"type": "string" },
+		
+
+		"sshKeyPath": {"type": "string"},
+		"sshKeyData": {"type": "string"},
+		"adminUsername": {"type": "string"},
+		"nodesVMSku": {"type": "string"},
+		"coreOSType": {"type": "string"},
+		
+		"nodeGroupIndex" : {"type": "int"}
+	},
+	"variables": {
+		"nodesGroupAvSetName": "[concat('nodes-avset-',parameters('nodeGroupIndex'))]",
+		"CoreOs-Stable": {
+			"publisher": "CoreOs",
+			"offer": "CoreOs",
+			"sku": "Stable",
+			"version": "latest"
+		},
+		"CoreOs-Beta": {
+			"publisher": "CoreOS",
+			"offer": "CoreOs",
+			"sku": "beta",
+			"version": "latest"
+		},
+		 "imageReference": "[variables(parameters('coreOSType'))]"
+	},
+	"resources": [
+		{
+			"comments": "Node Availability Set",
+			"type": "Microsoft.Compute/availabilitySets",
+			"name": "[variables('nodesGroupAvSetName')]",
+			"apiVersion": "[parameters('computeApiVersion')]",
+			"location": "[resourceGroup().location]",
+			"properties": {
+				"platformFaultDomainCount": "3",
+				"platformUpdateDomainCount": "5"
+			}
+		}
+	]
+}
