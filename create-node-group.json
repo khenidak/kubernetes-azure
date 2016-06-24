@@ -74,7 +74,7 @@
 				    "nodesSACount":  {"value": "[parameters('nodesSACount')]"},
 					"nodeIndex" : {"value" : "[copyIndex()]"},
 	
-					"sshKeyPath": {"value": "[variables('sshKeyPath')]"},
+					"sshKeyPath": {"value": "[parameters('sshKeyPath')]"},
 					"sshKeyData": {"value": "[parameters('sshKeyData')]"},
 					"adminUsername": {"value": "[parameters('adminUsername')]"},
 					"nodesVMSku": {"value": "[parameters('nodesVMSku')]"},
