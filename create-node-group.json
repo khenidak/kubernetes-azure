@@ -5,6 +5,8 @@
 		"computeApiVersion": {"type": "string"},
 		"networkApiVersion": {"type": "string"},
 		"storageApiVersion": {"type": "string"},
+		"resourceApiVersion": {"type" : "string"},
+
 		"clusterName": {"type": "string"},
 		"clusterNameClean": {"type": "string"},
 		"clusterVNETName": {"type": "string"},
@@ -13,6 +15,9 @@
 		"nodesPerGroupCount": {"type": "int"},
 		"nodesStorageAccountprefix": {"type": "string" },
 		
+
+		"baseTemplatesUri" : {"type": "string" },
+		 "templateCreateNode" : {"type": "string" },
 
 		"sshKeyPath": {"type": "string"},
 		"sshKeyData": {"type": "string"},
@@ -23,20 +28,7 @@
 		"nodeGroupIndex" : {"type": "int"}
 	},
 	"variables": {
-		"nodesGroupAvSetName": "[concat('nodes-avset-',parameters('nodeGroupIndex'))]",
-		"CoreOs-Stable": {
-			"publisher": "CoreOs",
-			"offer": "CoreOs",
-			"sku": "Stable",
-			"version": "latest"
-		},
-		"CoreOs-Beta": {
-			"publisher": "CoreOS",
-			"offer": "CoreOs",
-			"sku": "beta",
-			"version": "latest"
-		},
-		 "imageReference": "[variables(parameters('coreOSType'))]"
+		"nodesGroupAvSetName": "[concat('nodes-avset-',parameters('nodeGroupIndex'))]"
 	},
 	"resources": [
 		{
@@ -48,6 +40,46 @@
 			"properties": {
 				"platformFaultDomainCount": "3",
 				"platformUpdateDomainCount": "5"
+			}
+		},
+			{
+			"comments": "Creates nodes",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "[parameters('resourceApiVersion')]",
+			"name": "[concat('create-node-', copyIndex())]",
+			"copy": {
+				"name": "nodeLoop",
+				"count": "[parameters('nodesPerGroupCount')]"
+			},
+			"dependsOn": [
+				"[concat('Microsoft.Compute/availabilitySets/', variables('nodesGroupAvSetName')]"
+			],
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('baseTemplatesUri'), parameters('templateCreateNode'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"computeApiVersion": {"value": "[parameters('computeApiVersion')]"},
+					"networkApiVersion": {"value": "[parameters('networkApiVersion')]"},
+					"storageApiVersion": {"value": "[parameters('storageApiVersion')]"},
+					"clusterName": {"value": "[parameters('clusterName')]"},
+					"clusterNameClean": {"value": "[parameters('clusterNameClean')]"},
+					"clusterVNETName": {"value": "[parameters('clusterVNETName')]"},
+					"nodesStorageAccountprefix": {"value": "[parameters('nodesStorageAccountprefix')]"},
+
+					"nodesPerGroupCount": {"value": "[parameters('nodesPerGroupCount')]"},
+					"nodeGroupIndex" : {"value": "[parametrs('nodeGroupIndex')]"},
+				    "nodesSACount":  {"value": "[parameters('nodesSACount')]"},
+					"nodeIndex" : {"value" : "[copyIndex()]"},
+	
+					"sshKeyPath": {"value": "[variables('sshKeyPath')]"},
+					"sshKeyData": {"value": "[parameters('sshKeyData')]"},
+					"adminUsername": {"value": "[parameters('adminUsername')]"},
+					"nodesVMSku": {"value": "[parameters('nodesVMSku')]"},
+					"coreOSType" : {"value" : "[parameters('coreOSType')]"}
+				}
 			}
 		}
 	]

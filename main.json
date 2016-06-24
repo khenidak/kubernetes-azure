@@ -109,6 +109,7 @@
 		"baseTemplatesUri": "https://raw.githubusercontent.com/khenidak/kubernetes-azure/master/",
 		"templateCreateMasters": "create-masters.json",
 		"templateCreateNodeGroup": "create-node-group.json",
+		"templateCreateNode" : "create-node",
 		
 		"clusterNameClean": "[replace(parameters('clusterName'),'-','')]",
 		"constAddonMasterStorageAccountPrefix": "m",
@@ -326,6 +327,8 @@
 					"computeApiVersion": {"value": "[variables('computeApiVersion')]"},
 					"networkApiVersion": {"value": "[variables('networkApiVersion')]"},
 					"storageApiVersion": {"value": "[variables('storageApiVersion')]"},
+					"resourceApiVersion": {"value": "[variables('resourceApiVersion')]"},
+					
 					"clusterName": {"value": "[parameters('clusterName')]"},
 					"clusterNameClean": {"value": "[variables('clusterNameClean')]"},
 					"clusterVNETName": {"value": "[variables('clusterVNETName')]"},
@@ -335,6 +338,9 @@
 					"nodeGroupIndex" : {"value": "[copyIndex()]"},
 				    "nodesSACount":  {"value": "[parameters('nodesSACount')]"},
 	
+					"baseTemplatesUri" : {"value": "[variables('baseTemplatesUri')]"},
+		 			"templateCreateNode" : {"value": "[variables('templateCreateNode')]"},
+
 					"sshKeyPath": {"value": "[variables('sshKeyPath')]"},
 					"sshKeyData": {"value": "[parameters('sshKeyData')]"},
 					"adminUsername": {"value": "[parameters('adminUsername')]"},

@@ -1,0 +1,57 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"computeApiVersion": {"type": "string"},
+		"networkApiVersion": {"type": "string"},
+		"storageApiVersion": {"type": "string"},
+		"clusterName": {"type": "string"},
+		"clusterNameClean": {"type": "string"},
+		"clusterVNETName": {"type": "string"},
+		
+		"nodesSACount": {"type": "int"},
+		"nodesPerGroupCount": {"type": "int"},
+		"nodesStorageAccountprefix": {"type": "string" },
+		
+
+		"sshKeyPath": {"type": "string"},
+		"sshKeyData": {"type": "string"},
+		"adminUsername": {"type": "string"},
+		"nodesVMSku": {"type": "string"},
+		"coreOSType": {"type": "string"},
+		
+		"nodeGroupIndex" : {"type": "int"},
+		"nodeIndex" : {"type": "int"}
+		
+	},
+	"variables": {
+		"CoreOs-Stable": {
+			"publisher": "CoreOs",
+			"offer": "CoreOs",
+			"sku": "Stable",
+			"version": "latest"
+		},
+		"CoreOs-Beta": {
+			"publisher": "CoreOS",
+			"offer": "CoreOs",
+			"sku": "beta",
+			"version": "latest"
+		},
+		 "imageReference": "[variables(parameters('coreOSType'))]"
+	},
+	"resources": [
+					{
+						"comments" : "create subnet for the new node",
+						"apiVersion": "[parameters('networkApiVersion')]",
+						"type": "Microsoft.Network/virtualNetworks/subnets",
+						"name": "[concat(parameters('clusterVNETName'), '/', 'net-node-',  parameters('nodeGroupIndex') , '-',parameters('nodeIndex'))]",
+						"dependsOn": [],
+						"location": "[resourceGroup().location]",
+						"properties": {
+							"addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 4) , '.', parameters('nodeIndex'), '.0', '/16')]"
+						}
+    			}
+
+
+	]
+}
