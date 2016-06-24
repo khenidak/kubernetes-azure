@@ -53,7 +53,7 @@
 		}
 	},
 	"variables": {
-		"baseTemplatesUri": "https://github.com/khenidak/kubernetes-azure/",
+		"baseTemplatesUri": "https://raw.githubusercontent.com/khenidak/kubernetes-azure/master/",
 		"templateCreateMasters" : "create-masters.json",
 		"clusterNameClean": "[replace(parameters('clusterName'),'-','')]",
 		"constAddonMasterStorageAccountPrefix": "m",
@@ -74,7 +74,7 @@
 		"computeApiVersion": "2016-03-30",
 		"networkApiVersion": "2016-03-30",
 		"storageApiVersion": "2015-06-15",
-		"resourceApiVersion" : ""
+		"resourceApiVersion" : "2015-01-01"
 	},
 	"resources": [
 		{
@@ -219,7 +219,7 @@
 			"properties": { 
 			"mode": "incremental", 
 			"templateLink": {
-				"uri": "[concat(variables('templateCreateMasters'), variables('templateCreateMasters'))]",
+				"uri": "[concat(variables('baseTemplatesUri'), variables('templateCreateMasters'))]",
 				"contentVersion": "1.0.0.0"
 			}, 
 			"parameters": { 

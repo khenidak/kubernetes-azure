@@ -18,7 +18,7 @@
 			"comments": "Masters Availability Set",
 			"type": "Microsoft.Compute/availabilitySets",
 			"name": "[variables('mastersAvSetName')]",
-			"apiVersion": "[variables('computeApiVersion')]",
+			"apiVersion": "[parameters('computeApiVersion')]",
 			"location": "[resourceGroup().location]",
 			"properties": {
 				"platformFaultDomainCount": "3",
