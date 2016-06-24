@@ -219,15 +219,16 @@
 		},
 		  { 
 			"comments" : "Creates all masters calls into sub templates",
+			"type": "Microsoft.Resources/deployments", 
 			"apiVersion": "[variables('resourceApiVersion')]", 
 			"name": "nestedTemplate", 
-			"type": "Microsoft.Resources/deployments", 
-			"properties": { 
-			"mode": "incremental", 
 			"dependsOn": [
 				"[variables('mastersSALoop')]",
 				"[concat('Microsoft.Network/virtualNetworks/', variables('clusterLBNameMaster'))]"
       		],
+			"properties": { 
+			"mode": "incremental", 
+			
 			"templateLink": {
 				"uri": "[concat(variables('baseTemplatesUri'), variables('templateCreateMasters'))]",
 				"contentVersion": "1.0.0.0"
