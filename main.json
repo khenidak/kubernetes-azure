@@ -224,7 +224,7 @@
 			"name": "nestedTemplate", 
 			"dependsOn": [
 				"[variables('mastersSALoop')]",
-				"[concat('Microsoft.Network/virtualNetworks/', variables('clusterLBNameMaster'))]"
+				"[concat('Microsoft.Network/loadbalancers/', variables('clusterLBNameMaster'))]"
       		],
 			"properties": { 
 			"mode": "incremental", 
