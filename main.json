@@ -299,7 +299,7 @@
 					"mastersVMSku": {
 						"value": "[parameters('mastersVMSku')]"
 					},
-					"coreOSType" : {"value" : "parameters('coreOSType')"}
+					"coreOSType" : {"value" : "[parameters('coreOSType')]"}
 				}
 			}
 		}
