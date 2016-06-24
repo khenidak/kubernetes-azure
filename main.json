@@ -54,7 +54,7 @@
 			"maxValue": 255
 		},
 
-		"nodsVMSku": {
+		"nodesVMSku": {
 			"type": "string",
 			"defaultValue": "Standard_A1",
 			"metadata": {
