@@ -113,7 +113,7 @@
 				"count": "[parameters('mastersCount')]"
 			},
 			"dependsOn": [
-				"masters-nic"
+				"masters-nics"
 			],
 			"properties": {
 				"availabilitySet": {
