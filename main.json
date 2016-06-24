@@ -330,10 +330,11 @@
 					"clusterNameClean": {"value": "[variables('clusterNameClean')]"},
 					"clusterVNETName": {"value": "[variables('clusterVNETName')]"},
 					"nodesStorageAccountprefix": {"value": "[variables('nodesStorageAccountprefix')]"},
-					
+
 					"nodesPerGroupCount": {"value": "[parameters('nodesPerGroupCount')]"},
 					"nodeGroupIndex" : {"value": "[copyIndex()]"},
-
+				    "nodesSACount":  {"value": "[parameters('nodesSACount')]"},
+	
 					"sshKeyPath": {"value": "[variables('sshKeyPath')]"},
 					"sshKeyData": {"value": "[parameters('sshKeyData')]"},
 					"adminUsername": {"value": "[parameters('adminUsername')]"},
