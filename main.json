@@ -39,7 +39,7 @@
 		},
 		"nodesPerGroupCount": {
 			"type": "int",
-			"defaultValue": 5,
+			"defaultValue": 1,
 			"metadata": {
 				"description": "Node count per node-group, max allowed 255"
 			},
@@ -47,7 +47,7 @@
 		},
 		"nodesGroupCount": {
 			"type": "int",
-			"defaultValue": 2,
+			"defaultValue": 1,
 			"metadata": {
 				"description": "node group count (each is an availbility  set)"
 			},
