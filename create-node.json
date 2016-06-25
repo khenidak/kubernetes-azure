@@ -67,7 +67,7 @@
 		{
 			"comments" : "create a new nic for this node",
 			"type": "Microsoft.Network/networkInterfaces",
-			"name": "[concat('node-nic', variables('nodeSeq'))]",
+			"name": "[concat('node-nic-', variables('nodeSeq'))]",
 			"apiVersion": "[parameters('networkApiVersion')]",
 			"location": "[resourceGroup().location]",
 			"dependsOn": ["[concat('Microsoft.Network/subnets/' , parameters('clusterVNETName'), '/', variables('subnetName') )]"],
@@ -94,7 +94,7 @@
 			"name": "[concat('node-',  variables('nodeSeq'))]",
 			"apiVersion": "[parameters('computeApiVersion')]",
 			"location": "[resourceGroup().location]",
-			"dependsOn": ["[concat('Microsoft.Network/networkInterfaces/' , 'node-nic', variables('nodeSeq') )]"],
+			"dependsOn": ["[concat('Microsoft.Network/networkInterfaces/' , 'node-nic-', variables('nodeSeq') )]"],
 			"properties": {
 				"availabilitySet": { "id": "[resourceId('Microsoft.Compute/availabilitySets/', parameters('nodesGroupAvSetName')  )]"},
 				"hardwareProfile": {"vmSize": "[parameters('nodesVMSku')]"},
