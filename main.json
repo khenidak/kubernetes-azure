@@ -274,7 +274,7 @@
 			"comments": "Creates all masters calls into sub templates",
 			"type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('resourceApiVersion')]",
-			"name": "nestedTemplate",
+			"name": "nestedTemplate - create masters",
 			"dependsOn": [
 				"[variables('mastersSALoop')]",
 				"[concat('Microsoft.Network/loadbalancers/', variables('clusterLBNameMaster'))]"
@@ -308,7 +308,7 @@
 			"comments": "Creates node groups (each calls node creation)",
 			"type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('resourceApiVersion')]",
-			"name": "[concat('create-node-group', copyIndex())]",
+			"name": "[concat('create-node-group-', copyIndex())]",
 			"copy": {
 				"name": "nodeGroupsLoop",
 				"count": "[parameters('nodesGroupCount')]"

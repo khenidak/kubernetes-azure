@@ -46,7 +46,7 @@
 			"comments": "Creates nodes",
 			"type": "Microsoft.Resources/deployments",
 			"apiVersion": "[parameters('resourceApiVersion')]",
-			"name": "[concat('create-node-', copyIndex())]",
+			"name": "[concat('create-node-', parameters('nodeGroupIndex') ,'-',copyIndex())]",
 			"copy": {
 				"name": "nodeLoop",
 				"count": "[parameters('nodesPerGroupCount')]"
@@ -78,7 +78,8 @@
 					"sshKeyData": {"value": "[parameters('sshKeyData')]"},
 					"adminUsername": {"value": "[parameters('adminUsername')]"},
 					"nodesVMSku": {"value": "[parameters('nodesVMSku')]"},
-					"coreOSType" : {"value" : "[parameters('coreOSType')]"}
+					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
+					"nodesGroupAvSetName" : {"value" : "[variables('nodesGroupAvSetName')]"}
 				}
 			}
 		}

@@ -21,7 +21,9 @@
 		"coreOSType": {"type": "string"},
 		
 		"nodeGroupIndex" : {"type": "int"},
-		"nodeIndex" : {"type": "int"}
+		"nodeIndex" : {"type": "int"},
+
+		"nodesGroupAvSetName" : {"type" : "string"}
 		
 	},
 	"variables": {
@@ -37,20 +39,95 @@
 			"sku": "beta",
 			"version": "latest"
 		},
-		 "imageReference": "[variables(parameters('coreOSType'))]"
+		 "imageReference": "[variables(parameters('coreOSType'))]",
+		 "nodeSeq" : "parameters('nodeGroupIndex') , '-',parameters('nodeIndex'))",
+		 "subnetName" : "[concat('net-node-',  variables('nodeSeq'))]"
 	},
 	"resources": [
+		{
+			"comments": "Routing table - attached to node subnet",
+			"type": "Microsoft.Network/routeTables",
+			"apiVersion": "[parameters('networkApiVersion')]",
+			"name": "[concat('rtable-', variables('nodeSeq'))]",
+			"location": "[resourceGroup().location]",
+			"properties": {
+				"routes": []
+			}
+		},
+		{
+			"comments" : "create subnet for the new node",
+			"apiVersion": "[parameters('networkApiVersion')]",
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+			"name": "[concat(parameters('clusterVNETName'), '/', variables('subnetName') )]",
+			"dependsOn": [],
+			"location": "[resourceGroup().location]",
+			"properties": {"addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.', parameters('nodeIndex'), '.0', '/24')]"}
+		},
+		{
+			"comments" : "create a new nic for this node",
+			"type": "Microsoft.Network/networkInterfaces",
+			"name": "[concat('node-nic', nodeSeq)]",
+			"apiVersion": "[parameters('networkApiVersion')]",
+			"location": "[resourceGroup().location]",
+			"dependsOn": ["[concat('Microsoft.Network/subnets/' , parameters('clusterVNETName'), '/', variables('subnetName') )]"],
+			"properties": {
+				"enableIPForwarding": true,
+				"ipConfigurations": [
 					{
-						"comments" : "create subnet for the new node",
-						"apiVersion": "[parameters('networkApiVersion')]",
-						"type": "Microsoft.Network/virtualNetworks/subnets",
-						"name": "[concat(parameters('clusterVNETName'), '/', 'net-node-',  parameters('nodeGroupIndex') , '-',parameters('nodeIndex'))]",
-						"dependsOn": [],
-						"location": "[resourceGroup().location]",
+						"name": "node-ip-config",
 						"properties": {
-							"addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.', parameters('nodeIndex'), '.0', '/24')]"
+							"privateIPAllocationMethod": "Static",
+							"privateIPAddress": "[concat('10.', add(parameters('nodeGroupIndex'), 3), '.1.0')]",
+							"subnet": {
+								"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/',   variables('subnetName'))]"
+							},
+							"loadBalancerBackendAddressPools": []
 						}
-    			}
+					}
+				]
+			}
+		},
+		{
+			"comments": "Cluster node vm",
+			"type": "Microsoft.Compute/virtualMachines",
+			"name": "[concat('node-',  variables('nodeSeq'))]",
+			"apiVersion": "[parameters('computeApiVersion')]",
+			"location": "[resourceGroup().location]",
+			"dependsOn": ["[concat('Microsoft.Network/networkInterfaces/' , 'node-nic', variables('nodeSeq') )]"],
+			"properties": {
+				"availabilitySet": { "id": "[resourceId('Microsoft.Compute/availabilitySets/', parameters('nodesGroupAvSetName')  )]"},
+				"hardwareProfile": {"vmSize": "[parameters('nodesVMSku')]"},
+				"osProfile": {
+					"computerName": "[concat('node-', variables('nodeSeq'))]",
+					"adminUsername": "[parameters('adminUsername')]",
+					"linuxConfiguration": {
+						"disablePasswordAuthentication": "true",
+						"ssh": {
+							"publicKeys": [
+								{
+									"path": "[parameters('sshKeyPath')]",
+									"keyData": "[parameters('sshKeyData')]"
+								}
+							]
+						}
+					}
+				},
+				"storageProfile": {
+					"imageReference": "[variables('imageReference')]",
+					"osDisk": {
+						"name": "osdisk",
+						"vhd": {
+							"uri": "[concat('https://', concat(parameters('mastersStorageAccountprefix'), copyIndex()), '.blob.core.windows.net/vhds/', 'vm-', copyIndex(), 'OsDisk.vhd')]"
+						},
+						"caching": "ReadWrite",
+						"createOption": "FromImage"
+					}
+				},
+				"networkProfile": {
+					"networkInterfaces": [ {"id": "[resourceId('Microsoft.Network/networkInterfaces/', concat('node-nic', nodeSeq) )]"}]
+				}
+			}
+		}
 
 
 	]
