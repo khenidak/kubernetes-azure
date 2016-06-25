@@ -42,7 +42,7 @@
 		 "imageReference": "[variables(parameters('coreOSType'))]",
 		 "nodeSeq" : "[concat( parameters('nodeGroupIndex') , '-', parameters('nodeIndex') )]",
 		 "subnetName" : "[concat('net-node-',  variables('nodeSeq'))]",
-		 "nodeTargetSAPostfix" : "[mod( parameters('nodeIndex') , variables('nodesSACount') )]"
+		 "nodeTargetSAPostfix" : "[mod( parameters('nodeIndex') , parameters('nodesSACount') )]"
 	},
 	"resources": [
 		{
