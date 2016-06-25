@@ -274,7 +274,7 @@
 			"comments": "Creates all masters calls into sub templates",
 			"type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('resourceApiVersion')]",
-			"name": "nestedTemplate - create masters",
+			"name": "Template-create-masters",
 			"dependsOn": [
 				"[variables('mastersSALoop')]",
 				"[concat('Microsoft.Network/loadbalancers/', variables('clusterLBNameMaster'))]"
