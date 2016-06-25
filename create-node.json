@@ -40,7 +40,7 @@
 			"version": "latest"
 		},
 		 "imageReference": "[variables(parameters('coreOSType'))]",
-		 "nodeSeq" : "parameters('nodeGroupIndex') , '-',parameters('nodeIndex'))",
+		 "nodeSeq" : "[parameters('nodeGroupIndex') , '-',parameters('nodeIndex'))]",
 		 "subnetName" : "[concat('net-node-',  variables('nodeSeq'))]"
 	},
 	"resources": [
