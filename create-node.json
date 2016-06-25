@@ -67,7 +67,7 @@
 		{
 			"comments" : "create a new nic for this node",
 			"type": "Microsoft.Network/networkInterfaces",
-			"name": "[concat('node-nic', nodeSeq)]",
+			"name": "[concat('node-nic', variables('nodeSeq'))]",
 			"apiVersion": "[parameters('networkApiVersion')]",
 			"location": "[resourceGroup().location]",
 			"dependsOn": ["[concat('Microsoft.Network/subnets/' , parameters('clusterVNETName'), '/', variables('subnetName') )]"],
