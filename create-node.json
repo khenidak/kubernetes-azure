@@ -70,7 +70,7 @@
 			"name": "[concat('node-nic-', variables('nodeSeq'))]",
 			"apiVersion": "[parameters('networkApiVersion')]",
 			"location": "[resourceGroup().location]",
-			"dependsOn": ["[concat('Microsoft.Network/virtualnetworks/subnets/' , parameters('clusterVNETName'), '/', variables('subnetName') )]"],
+			"dependsOn": ["[concat('Microsoft.Network/virtualnetworks/' , parameters('clusterVNETName'), '/', variables('subnetName') )]"],
 			"properties": {
 				"enableIPForwarding": true,
 				"ipConfigurations": [
