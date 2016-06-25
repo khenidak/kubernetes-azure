@@ -40,7 +40,7 @@
 			"version": "latest"
 		},
 		 "imageReference": "[variables(parameters('coreOSType'))]",
-		 "nodeSeq" : "[concat(parameters('nodeGroupIndex') , '-',parameters('nodeIndex'))]",
+		 "nodeSeq" : "[concat( parameters('nodeGroupIndex') , '-', parameters('nodeIndex') )]",
 		 "subnetName" : "[concat('net-node-',  variables('nodeSeq'))]",
 		 "nodeTargetSAPostfix" : "[mod( variables('nodeIndex') , variables('nodesSACount') )]"
 	},
