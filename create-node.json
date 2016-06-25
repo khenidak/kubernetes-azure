@@ -124,7 +124,7 @@
 					}
 				},
 				"networkProfile": {
-					"networkInterfaces": [ {"id": "[resourceId('Microsoft.Network/networkInterfaces/', concat('node-nic', nodeSeq) )]"}]
+					"networkInterfaces": [ {"id": "[resourceId('Microsoft.Network/networkInterfaces/', concat('node-nic', variables('nodeSeq')) )]"}]
 				}
 			}
 		}
