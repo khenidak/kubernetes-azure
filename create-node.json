@@ -41,7 +41,8 @@
 		},
 		 "imageReference": "[variables(parameters('coreOSType'))]",
 		 "nodeSeq" : "[parameters('nodeGroupIndex') , '-',parameters('nodeIndex'))]",
-		 "subnetName" : "[concat('net-node-',  variables('nodeSeq'))]"
+		 "subnetName" : "[concat('net-node-',  variables('nodeSeq'))]",
+		 "nodeTargetSAPostfix" : "[mod( variables('nodeIndex') , variables('nodesSACount') )]"
 	},
 	"resources": [
 		{
@@ -117,7 +118,7 @@
 					"osDisk": {
 						"name": "osdisk",
 						"vhd": {
-							"uri": "[concat('https://', concat(parameters('mastersStorageAccountprefix'), copyIndex()), '.blob.core.windows.net/vhds/', 'vm-', copyIndex(), 'OsDisk.vhd')]"
+							"uri": "[concat('https://', concat( parameters('nodesStorageAccountprefix'), variables('nodeTargetSAPostfix') ),  '.blob.core.windows.net/', variables('nodeSeq'),  ,'/', 'node--OsDisk.vhd')]"
 						},
 						"caching": "ReadWrite",
 						"createOption": "FromImage"
