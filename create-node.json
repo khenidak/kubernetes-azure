@@ -118,7 +118,7 @@
 					"osDisk": {
 						"name": "osdisk",
 						"vhd": {
-							"uri": "[concat('https://', concat( parameters('nodesStorageAccountprefix'), variables('nodeTargetSAPostfix') ),  '.blob.core.windows.net/', variables('nodeSeq'),  ,'/', 'node--OsDisk.vhd')]"
+							"uri": "[concat('https://',  parameters('nodesStorageAccountprefix'), variables('nodeTargetSAPostfix') ,  '.blob.core.windows.net/', variables('nodeSeq'),  ,'/', 'node--OsDisk.vhd')]"
 						},
 						"caching": "ReadWrite",
 						"createOption": "FromImage"
