@@ -4,3 +4,6 @@ parameters.json
 .vscode
 
 gitsync-and-deploy.sh
+
+./keys
+./keys/* 
