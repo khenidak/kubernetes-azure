@@ -54,7 +54,7 @@
 			},
 			
 			"properties": {
-				"frontendIPConfiguration": {"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('clusterLBName'), '/frontendIPConfigurations/', 'LoadBalancerFrontEnd')]"},
+				"frontendIPConfiguration": {"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('clusterLBName'), '/frontendIPConfigurations/', 'LoadBalancerFrontEnd')]"}, 
 				"protocol": "tcp",
 				"frontendPort": "[copyIndex(5000)]",
 				"backendPort": 22,
