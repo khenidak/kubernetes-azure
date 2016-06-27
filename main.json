@@ -273,7 +273,8 @@
 			"name": "create-masters",
 			"dependsOn": [
 				"[variables('mastersSALoop')]",
-				"[concat('Microsoft.Network/loadbalancers/', variables('clusterLBNameMaster'))]"
+				"[concat('Microsoft.Network/loadbalancers/', variables('clusterLBNameMaster'))]",
+				"[concat('Microsoft.Network/virtualNetworks/', variables('clusterVNETName'), '/subnets/', variables('mastersSubnetName')) ]"
 			],
 			"properties": {
 				"mode": "Incremental",
