@@ -239,13 +239,13 @@
 			}
 		},
 		{
-			"comments": "masters loadbalancer - multi vip on LBs is currently in preview. once GA you can use one LB for everything",
+			"comments": "internal LB - multi vip on LBs is currently in preview. once GA you can use one LB and NSG for everything",
 			"type": "Microsoft.Network/loadBalancers",
 			"name": "[variables('clusterLBNameMaster')]",
 			"location": "[resourceGroup().location]",
 			"apiVersion": "[variables('networkApiVersion')]",
 			"dependsOn": [
-				"[concat('Microsoft.Network/virtualNetworks/', variables('clusterVNETName'))]"
+				"[concat('Microsoft.Network/virtualNetworks/', variables('clusterVNETName'), '/subnets/',  variables('mastersSubnetName') )]"
 			],
 			"properties": {
 				"frontendIPConfigurations": [
