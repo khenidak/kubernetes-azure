@@ -198,7 +198,7 @@
 			"dependsOn": ["[concat('Microsoft.Network/virtualnetworks/', variables('clusterVNETName'))]"],
 			"properties": {
 						"addressPrefix": "[variables('mastersSubnetSpace')]",
-						"routeTable": {"id": "[resourceId('Microsoft.Network/routeTables/',  parameters('VNETRoutingTableName'))]"}
+						"routeTable": {"id": "[resourceId('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName'))]"}
 					}
 		},
 		{
