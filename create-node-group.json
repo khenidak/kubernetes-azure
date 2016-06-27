@@ -25,7 +25,9 @@
 		"nodesVMSku": {"type": "string"},
 		"coreOSType": {"type": "string"},
 		
-		"nodeGroupIndex" : {"type": "int"}
+		"nodeGroupIndex" : {"type": "int"},
+		"VNETRoutingTableName" : {"type" : "string"}
+
 	},
 	"variables": {
 		"nodesGroupAvSetName": "[concat('nodes-avset-',parameters('nodeGroupIndex'))]",
@@ -40,7 +42,10 @@
 			"name": "[concat(parameters('clusterVNETName'), '/', variables('subnetName') )]",
 			"dependsOn": [],
 			"location": "[resourceGroup().location]",
-			"properties": {"addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.0.0', '/16')]"}
+			"properties": {
+					  "addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.0.0', '/16')]", 
+					  "routeTable": {"id": "[resourceId('Microsoft.Network/routeTables/',  parameters('VNETRoutingTableName'))]"}
+					}
 		},
 		{
 			"comments": "Node Availability Set",

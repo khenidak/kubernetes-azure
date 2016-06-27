@@ -345,7 +345,8 @@
 					"sshKeyData": {"value": "[parameters('sshKeyData')]"},
 					"adminUsername": {"value": "[parameters('adminUsername')]"},
 					"nodesVMSku": {"value": "[parameters('nodesVMSku')]"},
-					"coreOSType" : {"value" : "[parameters('coreOSType')]"}
+					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
+					"VNETRoutingTableName" : {"value" : "[variables('VNETRoutingTableName')]"}
 				}
 			}
 		}
