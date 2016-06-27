@@ -187,7 +187,7 @@
 				},
 				"subnets": [
 					{
-						"name": "[variables('mastersSubnetName') )]",
+						"name": "[variables('mastersSubnetName') ]",
 						"properties": {
 								"addressPrefix": "[variables('mastersSubnetSpace')]",
 								"routeTable": {"id": "[resourceId('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName'))]"}
