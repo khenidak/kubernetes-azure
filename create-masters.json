@@ -147,13 +147,14 @@
 			}
 		},
 		{
-			"apiVersion": "2015-06-15",
+			"comments" : "create nat rule for every master for ssh",
 			"type": "Microsoft.Network/loadBalancers/inboundNatRules",
+			"apiVersion": "[parameters('networkApiVersion')]",
 			"name": "[concat(parameters('clusterLBName'), '/', 'master-ssh-', copyIndex())]",
 			"location": "[resourceGroup().location]",
 			"copy": {
 				"name": "masternatLoop",
-				"count": "[variables('mastersCount')]"
+				"count": "[parameters('mastersCount')]"
 			},
 			
 			"properties": {
