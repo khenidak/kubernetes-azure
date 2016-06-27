@@ -17,9 +17,8 @@
 		"sshKeyData": {"type": "string"},
 		"adminUsername": {"type": "string"},
 		"mastersVMSku": {"type": "string"},
-		"coreOSType": {"type": "string"}
-		
-		
+		"coreOSType": {"type": "string"},
+		"clusterLBName" : {"type" : "string"}
 		
 		
 		
@@ -77,15 +76,23 @@
 							"loadBalancerBackendAddressPools": [ 
 								{
 									"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('clusterLBNameMaster'), '/backendAddressPools/', 'mastersPool')]"
+								},
+								{
+									"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('clusterLBName'), '/backendAddressPools/', 'mastersPool')]"
 								}
-							]
+							],
+							"loadBalancerInboundNatRules": [
+                				{
+                  					"id": " [concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('clusterLBName'), '/inboundNatRules/master-ssh-', copyindex())]"
+                				}
+              				]
 						}
 					}
 				]
 			}
 		},
 		{
-			"comments": "Cluster Master VMs",
+			"comments": "Cluster Master VM",
 			"type": "Microsoft.Compute/virtualMachines",
 			"name": "[concat('master-', copyIndex())]",
 			"apiVersion": "[parameters('computeApiVersion')]",
@@ -137,6 +144,24 @@
 						}
 					]
 				}
+			}
+		},
+		{
+			"apiVersion": "2015-06-15",
+			"type": "Microsoft.Network/loadBalancers/inboundNatRules",
+			"name": "[concat(parameters('clusterLBName'), '/', 'master-ssh-', copyIndex())]",
+			"location": "[resourceGroup().location]",
+			"copy": {
+				"name": "masternatLoop",
+				"count": "[variables('mastersCount')]"
+			},
+			
+			"properties": {
+				"frontendIPConfiguration": {"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('clusterLBName'), '/frontendIPConfigurations/', 'frontendIPConfigurations')]"},
+				"protocol": "tcp",
+				"frontendPort": "[copyIndex(5000)]",
+				"backendPort": 22,
+				"enableFloatingIP": false
 			}
 		}
 	]

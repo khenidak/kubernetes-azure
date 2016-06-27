@@ -232,8 +232,7 @@
 						}
 					}
 				],
-				"backendAddressPools": [],
-				"inboundNatPools": []
+				"backendAddressPools": [ {"name" : "mastersPool"}]
 			}
 		},
 		{
@@ -297,7 +296,8 @@
 					"sshKeyData": {"value": "[parameters('sshKeyData')]"},
 					"adminUsername": {"value": "[parameters('adminUsername')]"},
 					"mastersVMSku": {"value": "[parameters('mastersVMSku')]"},
-					"coreOSType" : {"value" : "[parameters('coreOSType')]"}
+					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
+					"clusterLBName" : {"value" : "[variables('clusterLBName')]"}
 				}
 			}
 		},	
@@ -314,7 +314,8 @@
 				"Microsoft.Resources/deployments/create-masters",
 				"[variables('nodesSALoop')]",
 				"[concat('Microsoft.Network/virtualnetworks/', variables('clusterVNETName'))]",
-				"[concat('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName')) ]"
+				"[concat('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName')) ]",
+				"[concat('Microsoft.Network/loadBalancers/', variables('clusterLBName'))]"
 			],
 			"properties": {
 				"mode": "Incremental",

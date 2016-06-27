@@ -46,7 +46,6 @@
 		 "nodeName" : "[concat('node-',  variables('nodeSeq'))]"
 	},
 	"resources": [
-		
 		{
 			"comments" : "create a new nic for this node",
 			"type": "Microsoft.Network/networkInterfaces",
