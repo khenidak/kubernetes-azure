@@ -303,9 +303,7 @@
 					"coreOSType" : {"value" : "[parameters('coreOSType')]"}
 				}
 			}
-		},
-
-		
+		},	
 		{
 			"comments": "Creates node groups (each calls node creation)",
 			"type": "Microsoft.Resources/deployments",
