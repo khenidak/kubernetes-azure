@@ -166,7 +166,7 @@
 		{
 			"comments" : "boot strap masters",
 			"type": "Microsoft.Compute/virtualMachines/extensions",
-			"name": "[concat(''master-', copyIndex()','/installcustomscript')]",
+			"name": "[concat(''master-', copyIndex(),'/installcustomscript')]",
 			"apiVersion": "[parameters('computeApiVersion')]",
 			"location": "[resourceGroup().location]",
 			"dependsOn": ["masters-vms"],
