@@ -31,7 +31,7 @@
 	},
 	"variables": {
 		"nodesGroupAvSetName": "[concat('nodes-avset-',parameters('nodeGroupIndex'))]",
-		"subnetName" : "[concat('net-node-group-',  parameters('nodeGroupIndex'))]"
+		"nodegroupSubnetName" : "[concat('net-node-group-',  parameters('nodeGroupIndex'))]"
 
 	},
 	"resources": [
@@ -39,7 +39,7 @@
 			"comments" : "create subnet for the new node group",
 			"apiVersion": "[parameters('networkApiVersion')]",
 			"type": "Microsoft.Network/virtualNetworks/subnets",
-			"name": "[concat(parameters('clusterVNETName'), '/', variables('subnetName') )]",
+			"name": "[concat(parameters('clusterVNETName'), '/', variables('nodegroupSubnetName') )]",
 			"location": "[resourceGroup().location]",
 			"properties": {
 					  "addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.0.0', '/16')]", 
@@ -52,7 +52,7 @@
 			"name": "[variables('nodesGroupAvSetName')]",
 			"apiVersion": "[parameters('computeApiVersion')]",
 			"location": "[resourceGroup().location]",
-			"dependsOn" : ["[concat('Microsoft.Network/virtualnetworks/', parameters('clusterVNETName') , '/subnets/', variables('subnetName'))]"],
+			"dependsOn" : ["[concat('Microsoft.Network/virtualnetworks/', parameters('clusterVNETName') , '/subnets/', variables('nodegroupSubnetName'))]"],
 			"properties": {
 				"platformFaultDomainCount": "3",
 				"platformUpdateDomainCount": "5"
@@ -97,7 +97,7 @@
 					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
 					"nodesGroupAvSetName" : {"value" : "[variables('nodesGroupAvSetName')]"},
 
-					"subnetName" : {"value": "[variables('subnetName')]"},
+					"nodegroupSubnetName" : {"value": "[variables('nodegroupSubnetName')]"},
 					"VNETRoutingTableName" : {"value" : "parameters('VNETRoutingTableName')"}
 
 				}
