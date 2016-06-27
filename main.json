@@ -24,7 +24,7 @@
 		},
 		"clusterName": {
 			"type": "string",
-			"defaultValue": "my-kub-cluster02",
+			"defaultValue": "my-kub-cluster03",
 			"metadata": {
 				"description": "cluster name"
 			}

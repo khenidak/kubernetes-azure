@@ -181,7 +181,7 @@
 				"autoUpgradeMinorVersion": true,
 				"settings": {
 					"fileUris": ["[concat(  parameters('baseTemplatesUri'), parameters('masterbootstrapScript') )]"],
-					"commandToExecute": "[concat('./', parameters('masterbootstrapScript'), ' ', parameters('adminUsername')  )]"
+					"commandToExecute": "[concat('sh ', parameters('masterbootstrapScript'), ' ', parameters('adminUsername')  )]"
 				}
       		}
     	}
