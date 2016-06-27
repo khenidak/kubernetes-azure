@@ -39,7 +39,7 @@
 			"comments" : "create subnet for the new node group",
 			"apiVersion": "[parameters('networkApiVersion')]",
 			"type": "Microsoft.Network/virtualNetworks/subnets",
-			"name": "[concat(parameters('clusterVNETName'), '/', variables('nodegroupSubnetName') )]",
+			"name": "[concat(parameters('clusterVNETName'), '/',  variables('nodegroupSubnetName') )]",
 			"location": "[resourceGroup().location]",
 			"properties": {
 					  "addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.0.0', '/16')]", 
