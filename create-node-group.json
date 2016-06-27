@@ -68,7 +68,8 @@
 				"count": "[parameters('nodesPerGroupCount')]"
 			},
 			"dependsOn": [
-				"[concat('Microsoft.Compute/availabilitySets/', variables('nodesGroupAvSetName'))]"
+				"[concat('Microsoft.Compute/availabilitySets/', variables('nodesGroupAvSetName'))]",
+				"[concat('Microsoft.Network/virtual/network', variables('clusterVNETName') , '/', variables('subnetName'))]"
 			],
 			"properties": {
 				"mode": "incremental",

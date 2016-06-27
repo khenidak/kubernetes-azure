@@ -42,21 +42,11 @@
 		},
 		 "imageReference": "[variables(parameters('coreOSType'))]",
 		 "nodeSeq" : "[concat( parameters('nodeGroupIndex') , '-', parameters('nodeIndex') )]",
-		 "nodeTargetSAPostfix" : "[mod( parameters('nodeIndex') , parameters('nodesSACount') )]"
+		 "nodeTargetSAPostfix" : "[mod( parameters('nodeIndex') , parameters('nodesSACount') )]",
+		 "nodeName" : "[concat('node-',  variables('nodeSeq'))]"
 	},
 	"resources": [
-		{
-			"comments" : "add new route to the new cluster node",
-			"type": "Microsoft.Network/routeTables/routes",
-			"apiVersion": "[parameters('networkApiVersion')]",
-			"name": "[concat(parameters('subnetName') ,'/', parameters('VNETRoutingTableName'), '-', variables('nodeSeq'))]",
-			"location": "[resourceGroup().location]",
-			"properties": {
-				"addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.0.0', '/16')]",
-				"nextHopType": "VirtualAppliance",
-				"nextHopIpAddress": "[concat('10.', add(parameters('nodeGroupIndex'), 3), '.0.4')]"
-				}
-   		},
+		
 		{
 			"comments" : "create a new nic for this node",
 			"type": "Microsoft.Network/networkInterfaces",
@@ -84,7 +74,7 @@
 		{
 			"comments": "Cluster node vm",
 			"type": "Microsoft.Compute/virtualMachines",
-			"name": "[concat('node-',  variables('nodeSeq'))]",
+			"name": "[variables('nodeName')]",
 			"apiVersion": "[parameters('computeApiVersion')]",
 			"location": "[resourceGroup().location]",
 			"dependsOn": ["[concat('Microsoft.Network/networkInterfaces/' , 'node-nic-', variables('nodeSeq') )]"],
@@ -121,6 +111,19 @@
 					"networkInterfaces": [ {"id": "[resourceId('Microsoft.Network/networkInterfaces/', concat('node-nic-', variables('nodeSeq')) )]"}]
 				}
 			}
-		}
+		},
+		{
+			"comments" : "add new route to the new cluster node",
+			"type": "Microsoft.Network/routeTables/routes",
+			"apiVersion": "[parameters('networkApiVersion')]",
+			"name": "[concat(parameters('subnetName') ,'/', parameters('VNETRoutingTableName'), '-', variables('nodeSeq'))]",
+			"location": "[resourceGroup().location]",
+		    "dependsOn": ["[concat('Microsoft.Compute/virtualMachines/' ,  variables('nodeName') )]"],
+			"properties": {
+				"addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.0.0', '/16')]",
+				"nextHopType": "VirtualAppliance",
+				"nextHopIpAddress": "[concat('10.', add(parameters('nodeGroupIndex'), 3), '.0.4')]"
+				}
+   		}
 	]
 }
