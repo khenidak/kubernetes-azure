@@ -44,16 +44,7 @@
 		 "nodeTargetSAPostfix" : "[mod( parameters('nodeIndex') , parameters('nodesSACount') )]"
 	},
 	"resources": [
-		{
-			"comments": "Routing table - attached to node subnet",
-			"type": "Microsoft.Network/routeTables",
-			"apiVersion": "[parameters('networkApiVersion')]",
-			"name": "[concat('rtable-', variables('nodeSeq'))]",
-			"location": "[resourceGroup().location]",
-			"properties": {
-				"routes": []
-			}
-		},
+		
 		
 		{
 			"comments" : "create a new nic for this node",
