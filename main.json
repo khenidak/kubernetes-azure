@@ -110,7 +110,10 @@
 		"templateCreateMasters": "create-masters.json",
 		"templateCreateNodeGroup": "create-node-group.json",
 		"templateCreateNode" : "create-node.json",
+		"masterbootstrapScript" : "bootstrap-master.sh",
 		
+
+
 		"clusterNameClean": "[replace(parameters('clusterName'),'-','')]",
 		"constAddonMasterStorageAccountPrefix": "m",
 		"mastersStorageAccountprefix": "[ concat(variables('constAddonMasterStorageAccountPrefix') ,   variables('clusterNameClean') ) ]",
@@ -326,7 +329,10 @@
 					"adminUsername": {"value": "[parameters('adminUsername')]"},
 					"mastersVMSku": {"value": "[parameters('mastersVMSku')]"},
 					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
-					"clusterLBName" : {"value" : "[variables('clusterLBName')]"}
+					"clusterLBName" : {"value" : "[variables('clusterLBName')]"},
+					"baseTemplatesUri" : {"value": "[variables('baseTemplatesUri')]" },
+					"masterbootstrapScript" : {"value": "[variables('masterbootstrapScript')]" }
+	
 				}
 			}
 		},	

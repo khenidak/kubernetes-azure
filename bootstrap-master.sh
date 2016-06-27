@@ -112,9 +112,6 @@ sudo systemctl enable /etc/systemd/system/etcd-container.service
 sudo systemctl start etcd-container.service
 
 
-echo "+ Sleeping 10 sec for etcd cluster to become healthy"
-
-sleep 10s 
 
 echo "+ Starting Kubernetes API Server (Docker)"
 
@@ -210,7 +207,7 @@ sudo touch /etc/systemd/system/kubernetesControllerManager-container.service
 
 cat << EOL | sudo tee --append /etc/systemd/system/kubernetesControllerManager-container.service
 [Unit]  
-Description=Kubernetes-Scheduler
+Description=Kubernetes-ControllerManager
 After=docker.service 
 Requires=docker.service 
 

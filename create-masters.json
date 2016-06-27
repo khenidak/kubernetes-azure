@@ -18,12 +18,9 @@
 		"adminUsername": {"type": "string"},
 		"mastersVMSku": {"type": "string"},
 		"coreOSType": {"type": "string"},
-		"clusterLBName" : {"type" : "string"}
-		
-		
-		
-					
-		
+		"clusterLBName" : {"type" : "string"},
+		"baseTemplatesUri" : {"type": "string" },
+		"masterbootstrapScript" : {"type": "string" }
 	},
 	"variables": {
 		"mastersAvSetName": "masters-avset",
@@ -165,6 +162,28 @@
 					]
 				}
 			}
-		}
+		},
+		{
+			"comments" : "boot strap masters",
+			"type": "Microsoft.Compute/virtualMachines/extensions",
+			"name": "[concat(''master-', copyIndex()','/installcustomscript')]",
+			"apiVersion": "[parameters('computeApiVersion')]",
+			"location": "[resourceGroup().location]",
+			"dependsOn": ["masters-vms"],
+			"copy": {
+				"name": "masters-os-ext-vms",
+				"count": "[parameters('mastersCount')]"
+			},
+			"properties": {
+				"publisher": "Microsoft.OSTCExtensions",
+				"type": "CustomScriptForLinux",
+				"typeHandlerVersion": "1.5",
+				"autoUpgradeMinorVersion": true,
+				"settings": {
+					"fileUris": ["[concat(  parameters('baseTemplatesUri'), parameters('masterbootstrapScript') )]"],
+					"commandToExecute": "[concat('./', parameters('masterbootstrapScript'), ' ', parameters('adminUsername')  )]"
+				}
+      		}
+    	}
 	]
 }
