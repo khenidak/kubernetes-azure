@@ -47,7 +47,7 @@
 		},
 		"nodesGroupCount": {
 			"type": "int",
-			"defaultValue": 1,
+			"defaultValue": 1	,
 			"metadata": {
 				"description": "node group count (each is an availbility  set)"
 			},
@@ -122,7 +122,7 @@
 		"mastersSubnetName": "masters-net",
 		"clusterVnetSpaceMain": "10.0.0.0/8",
 		"mastersSubnetSpace": "10.0.0.0/24",
-		"mastersSubnetRoutingTable": "[concat(variables('mastersSubnetName'), '-rtable' )]",
+		"VNETRoutingTableName": "[concat(variables('clusterNameClean'), '-routing-table' )]",
 		"clusterPipName": "[concat(parameters('clusterName'), '-pip' )]",
 		"clusterLBName": "[concat(parameters('clusterName'), '-lb' )]",
 		"clusterLBNameMaster": "[concat(variables('clusterLBName'), '-masters' )]",
@@ -163,13 +163,13 @@
 			}
 		},
 		{
-			"comments": "Routing table - attached to masters subnet",
+			"comments": "Routing table - all subnet",
 			"type": "Microsoft.Network/routeTables",
 			"apiVersion": "[variables('networkApiVersion')]",
-			"name": "[variables('mastersSubnetRoutingTable')]",
+			"name": "[variables('VNETRoutingTableName')]",
 			"location": "[resourceGroup().location]",
 			"tags": {
-				"displayName": "masters - Nodes"
+				"displayName": "vnet routing table"
 			},
 			"properties": {
 				"routes": []
@@ -182,7 +182,7 @@
 			"location": "[resourceGroup().location]",
 			"apiVersion": "[variables('networkApiVersion')]",
 			"dependsOn": [
-				"[concat('Microsoft.Network/routeTables/', variables('mastersSubnetRoutingTable'))]"
+				"[concat('Microsoft.Network/routeTables/', variables('VNETRoutingTableName'))]"
 			],
 			"properties": {
 				"addressSpace": {
@@ -196,7 +196,7 @@
 						"properties": {
 							"addressPrefix": "[variables('mastersSubnetSpace')]",
 							"routeTable": {
-								"id": "[resourceId('Microsoft.Network/routeTables/',  variables('mastersSubnetRoutingTable'))]"
+								"id": "[resourceId('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName'))]"
 							}
 						}
 					}

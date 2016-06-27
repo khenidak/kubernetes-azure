@@ -23,8 +23,8 @@
 		"nodeGroupIndex" : {"type": "int"},
 		"nodeIndex" : {"type": "int"},
 
-		"nodesGroupAvSetName" : {"type" : "string"}
-		
+		"nodesGroupAvSetName" : {"type" : "string"},
+		"subnetName" : 		 {"type" : "string"}
 	},
 	"variables": {
 		"CoreOs-Stable": {
@@ -41,7 +41,6 @@
 		},
 		 "imageReference": "[variables(parameters('coreOSType'))]",
 		 "nodeSeq" : "[concat( parameters('nodeGroupIndex') , '-', parameters('nodeIndex') )]",
-		 "subnetName" : "[concat('net-node-',  variables('nodeSeq'))]",
 		 "nodeTargetSAPostfix" : "[mod( parameters('nodeIndex') , parameters('nodesSACount') )]"
 	},
 	"resources": [
@@ -55,15 +54,7 @@
 				"routes": []
 			}
 		},
-		{
-			"comments" : "create subnet for the new node",
-			"apiVersion": "[parameters('networkApiVersion')]",
-			"type": "Microsoft.Network/virtualNetworks/subnets",
-			"name": "[concat(parameters('clusterVNETName'), '/', variables('subnetName') )]",
-			"dependsOn": [],
-			"location": "[resourceGroup().location]",
-			"properties": {"addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.', parameters('nodeIndex'), '.0', '/24')]"}
-		},
+		
 		{
 			"comments" : "create a new nic for this node",
 			"type": "Microsoft.Network/networkInterfaces",
@@ -125,7 +116,7 @@
 					}
 				},
 				"networkProfile": {
-					"networkInterfaces": [ {"id": "[resourceId('Microsoft.Network/networkInterfaces/', concat('node-nic', variables('nodeSeq')) )]"}]
+					"networkInterfaces": [ {"id": "[resourceId('Microsoft.Network/networkInterfaces/', concat('node-nic-', variables('nodeSeq')) )]"}]
 				}
 			}
 		}

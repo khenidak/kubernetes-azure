@@ -28,9 +28,20 @@
 		"nodeGroupIndex" : {"type": "int"}
 	},
 	"variables": {
-		"nodesGroupAvSetName": "[concat('nodes-avset-',parameters('nodeGroupIndex'))]"
+		"nodesGroupAvSetName": "[concat('nodes-avset-',parameters('nodeGroupIndex'))]",
+		"subnetName" : "[concat('net-node-group-',  parameters('nodeGroupIndex')))]"
+
 	},
 	"resources": [
+		{
+			"comments" : "create subnet for the new node",
+			"apiVersion": "[parameters('networkApiVersion')]",
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+			"name": "[concat(parameters('clusterVNETName'), '/', variables('subnetName') )]",
+			"dependsOn": [],
+			"location": "[resourceGroup().location]",
+			"properties": {"addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.0.0', '/16')]"}
+		},
 		{
 			"comments": "Node Availability Set",
 			"type": "Microsoft.Compute/availabilitySets",
@@ -79,7 +90,9 @@
 					"adminUsername": {"value": "[parameters('adminUsername')]"},
 					"nodesVMSku": {"value": "[parameters('nodesVMSku')]"},
 					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
-					"nodesGroupAvSetName" : {"value" : "[variables('nodesGroupAvSetName')]"}
+					"nodesGroupAvSetName" : {"value" : "[variables('nodesGroupAvSetName')]"},
+
+					"subnetName" : {"value: ": "[variables('subnetName')]"}
 				}
 			}
 		}
