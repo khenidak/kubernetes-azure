@@ -175,6 +175,19 @@
 				"routes": []
 			}
 		},
+		{
+			"comments": "Cluster vnet",
+			"type": "Microsoft.Network/virtualNetworks",
+			"name": "[variables('clusterVNETName')]",
+			"location": "[resourceGroup().location]",
+			"apiVersion": "[variables('networkApiVersion')]",
+			"dependsOn": ["[concat('Microsoft.Network/routeTables/', variables('VNETRoutingTableName'))]"],
+			"properties": {
+				"addressSpace": {
+					"addressPrefixes": ["[variables('clusterVnetSpaceMain')]"]
+				}
+			}
+		},
 
 		{
 			"comments" : "masters subnet",
