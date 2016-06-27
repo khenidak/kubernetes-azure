@@ -197,8 +197,6 @@
 			}
 			
 		},
-
-		
 		{
 			"comments": "public ip for the cluster, attached to the edge LB",
 			"type": "Microsoft.Network/publicIPAddresses",
