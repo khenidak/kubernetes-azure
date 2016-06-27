@@ -63,7 +63,7 @@
 							"privateIPAllocationMethod": "Static",
 							"privateIPAddress": "[concat('10.', add(parameters('nodeGroupIndex'), 3), '.0.4')]",
 							"subnet": {
-								"id": "[ resourceid(concat('/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/',   parameters('nodegroupSubnetName') ) ) ]"
+								"id": "[ concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/', parameters('nodegroupSubnetName') )  ]"
 							},
 							"loadBalancerBackendAddressPools": []
 						}
@@ -79,7 +79,9 @@
 			"location": "[resourceGroup().location]",
 			"dependsOn": ["[concat('Microsoft.Network/networkInterfaces/' , 'node-nic-', variables('nodeSeq') )]"],
 			"properties": {
-				"availabilitySet": { "id": "[resourceId('Microsoft.Compute/availabilitySets/', parameters('nodesGroupAvSetName')  )]"},
+				"availabilitySet": { 
+						"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Compute/availabilitySets/', parameters('nodesGroupAvSetName')  )]"
+						},
 				"hardwareProfile": {"vmSize": "[parameters('nodesVMSku')]"},
 				"osProfile": {
 					"computerName": "[concat('node-', variables('nodeSeq'))]",
@@ -108,7 +110,11 @@
 					}
 				},
 				"networkProfile": {
-					"networkInterfaces": [ {"id": "[resourceId('Microsoft.Network/networkInterfaces/', concat('node-nic-', variables('nodeSeq')) )]"}]
+					"networkInterfaces": [ 
+							{
+							"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/networkInterfaces/', concat('node-nic-', variables('nodeSeq')) )]"
+							}
+						]
 				}
 			}
 		},
