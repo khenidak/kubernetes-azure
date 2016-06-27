@@ -43,6 +43,25 @@
 	},
 	"resources": [
 		{
+			"comments" : "create nat rule for every master for ssh",
+			"type": "Microsoft.Network/loadBalancers/inboundNatRules",
+			"apiVersion": "[parameters('networkApiVersion')]",
+			"name": "[concat(parameters('clusterLBName'), '/', 'master-ssh-', copyIndex())]",
+			"location": "[resourceGroup().location]",
+			"copy": {
+				"name": "masternatLoop",
+				"count": "[parameters('mastersCount')]"
+			},
+			
+			"properties": {
+				"frontendIPConfiguration": {"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('clusterLBName'), '/frontendIPConfigurations/', 'frontendIPConfigurations')]"},
+				"protocol": "tcp",
+				"frontendPort": "[copyIndex(5000)]",
+				"backendPort": 22,
+				"enableFloatingIP": false
+			}
+		},
+		{
 			"comments": "Masters Availability Set",
 			"type": "Microsoft.Compute/availabilitySets",
 			"name": "[variables('mastersAvSetName')]",
@@ -58,6 +77,7 @@
 			"name": "[concat('nic-master-', copyIndex())]",
 			"apiVersion": "[parameters('networkApiVersion')]",
 			"location": "[resourceGroup().location]",
+			"dependsOn" : ["masternatLoop"],
 			"copy": {
 				"name": "masters-nics",
 				"count": "[parameters('mastersCount')]"
@@ -144,25 +164,6 @@
 						}
 					]
 				}
-			}
-		},
-		{
-			"comments" : "create nat rule for every master for ssh",
-			"type": "Microsoft.Network/loadBalancers/inboundNatRules",
-			"apiVersion": "[parameters('networkApiVersion')]",
-			"name": "[concat(parameters('clusterLBName'), '/', 'master-ssh-', copyIndex())]",
-			"location": "[resourceGroup().location]",
-			"copy": {
-				"name": "masternatLoop",
-				"count": "[parameters('mastersCount')]"
-			},
-			
-			"properties": {
-				"frontendIPConfiguration": {"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('clusterLBName'), '/frontendIPConfigurations/', 'frontendIPConfigurations')]"},
-				"protocol": "tcp",
-				"frontendPort": "[copyIndex(5000)]",
-				"backendPort": 22,
-				"enableFloatingIP": false
 			}
 		}
 	]
