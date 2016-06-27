@@ -274,7 +274,7 @@
 			"dependsOn": [
 				"[variables('mastersSALoop')]",
 				"[concat('Microsoft.Network/loadbalancers/', variables('clusterLBNameMaster'))]",
-				"[concat('Microsoft.Network/virtualNetworks/', variables('clusterVNETName'),'/' , variables('mastersSubnetName')) ]"
+				"[concat('Microsoft.Network/virtualNetworks/', variables('clusterVNETName'),'/subnets/' , variables('mastersSubnetName')) ]"
 			],
 			"properties": {
 				"mode": "Incremental",
