@@ -278,7 +278,7 @@
 				"[concat('Microsoft.Network/loadbalancers/', variables('clusterLBNameMaster'))]"
 			],
 			"properties": {
-				"mode": "incremental",
+				"mode": "Incremental",
 				"templateLink": {
 					"uri": "[concat(variables('baseTemplatesUri'), variables('templateCreateMasters'))]",
 					"contentVersion": "1.0.0.0"
@@ -318,7 +318,7 @@
 				"[concat('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName')) ]"
 			],
 			"properties": {
-				"mode": "incremental",
+				"mode": "Incremental",
 				"templateLink": {
 					"uri": "[concat(variables('baseTemplatesUri'), variables('templateCreateNodeGroup'))]",
 					"contentVersion": "1.0.0.0"
