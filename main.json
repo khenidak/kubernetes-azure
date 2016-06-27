@@ -251,7 +251,7 @@
 						"name": "LoadBalancerFrontend-internal",
 						"properties": {
 							"subnet": {
-								"id": "[ resourceid( concat('/Microsoft.Network/virtualNetworks/', variables('clusterVNETName'), '/subnets/', variables('mastersSubnetName')) )]"
+								"id": "[ resourceid( concat('Microsoft.Network/virtualNetworks/', variables('clusterVNETName'), '/subnets/', variables('mastersSubnetName')) )]"
 							},
 							"privateIPAddress": "10.0.0.4",
 							"privateIPAllocationMethod": "Static"
