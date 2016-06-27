@@ -190,7 +190,7 @@
 						"name": "[variables('mastersSubnetName') ]",
 						"properties": {
 								"addressPrefix": "[variables('mastersSubnetSpace')]",
-								"routeTable": {"id": "[resourceId('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName'))]"}
+								"routeTable": {"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/routeTables/',  variables('VNETRoutingTableName'))]"}
 							}
 					}
 				]
