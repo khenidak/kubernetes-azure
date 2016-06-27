@@ -116,7 +116,7 @@
 			"comments" : "add new route to the new cluster node",
 			"type": "Microsoft.Network/routeTables/routes",
 			"apiVersion": "[parameters('networkApiVersion')]",
-			"name": "[concat(parameters('subnetName') ,'/', parameters('VNETRoutingTableName'), '-', variables('nodeSeq'))]",
+			"name": "[concat( parameters('VNETRoutingTableName'),'/', 'route-', variables('nodeSeq'))]",
 			"location": "[resourceGroup().location]",
 		    "dependsOn": ["[concat('Microsoft.Compute/virtualMachines/' ,  variables('nodeName') )]"],
 			"properties": {
