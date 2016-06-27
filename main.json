@@ -313,8 +313,10 @@
 				"count": "[parameters('nodesGroupCount')]"
 			},
 			"dependsOn": [
+				"Microsoft.Resources/deployments/create-masters",
 				"[variables('nodesSALoop')]",
-				"[concat('Microsoft.Network/virtualnetworks/', variables('clusterVNETName'))]"
+				"[concat('Microsoft.Network/virtualnetworks/', variables('clusterVNETName'))]",
+				"[concat('Microsoft.Network/routeTables',  variables('VNETRoutingTableName')) ]"
 			],
 			"properties": {
 				"mode": "incremental",
