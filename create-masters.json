@@ -103,7 +103,7 @@
 							],
 							"loadBalancerInboundNatRules": [
                 				{
-                  					"id": " [concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('clusterLBName'), '/inboundNatRules/master-ssh-', copyindex())]"
+                  					"id": " concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('clusterLBName'), '/inboundNatRules/master-ssh-', copyindex())]"
                 				}
               				]
 						}
