@@ -72,7 +72,7 @@
 							"privateIPAllocationMethod": "Static",
 							"privateIPAddress": "[concat('10.0.0.', copyIndex(5))]",
 							"subnet": {
-								"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/',   parameters('mastersSubnetName'))]"
+								"id": "[resourceid( concat('Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/',   parameters('mastersSubnetName')) )]"
 							},
 							"loadBalancerBackendAddressPools": [
 								{
