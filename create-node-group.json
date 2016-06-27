@@ -43,8 +43,7 @@
 			"dependsOn": [],
 			"location": "[resourceGroup().location]",
 			"properties": {
-					  "addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.0.0', '/16')]", 
-					  "routeTable": {"id": "[resourceId('Microsoft.Network/routeTables/',  parameters('VNETRoutingTableName'))]"}
+					  "addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.0.0', '/16')]"
 					}
 		},
 		{
