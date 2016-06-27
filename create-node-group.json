@@ -98,7 +98,7 @@
 					"nodesGroupAvSetName" : {"value" : "[variables('nodesGroupAvSetName')]"},
 
 					"nodegroupSubnetName" : {"value": "[variables('nodegroupSubnetName')]"},
-					"VNETRoutingTableName" : {"value" : "parameters('VNETRoutingTableName')"}
+					"VNETRoutingTableName" : {"value" : "[parameters('VNETRoutingTableName')]"}
 
 				}
 			}
