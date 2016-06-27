@@ -40,7 +40,7 @@
 			"apiVersion": "[parameters('networkApiVersion')]",
 			"type": "Microsoft.Network/virtualNetworks/subnets",
 			"name": "[concat(parameters('clusterVNETName'), '/', variables('subnetName') )]",
-			"dependsOn": [],
+			 "dependsOn": ["[concat('Microsoft.Network/virtualNetworks/',parameters('clusterVNETName'))]"],
 			"location": "[resourceGroup().location]",
 			"properties": {
 					  "addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.0.0', '/16')]", 
