@@ -185,23 +185,20 @@
 				"addressSpace": {
 					"addressPrefixes": ["[variables('clusterVnetSpaceMain')]"]
 				},
-				"subnets": []
+				"subnets": [
+					{
+						"name": "[variables('mastersSubnetName') )]",
+						"properties": {
+								"addressPrefix": "[variables('mastersSubnetSpace')]",
+								"routeTable": {"id": "[resourceId('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName'))]"}
+							}
+					}
+				]
 			}
 			
 		},
 
-		{
-			"comments" : "masters subnet",
-			"apiVersion": "[variables('networkApiVersion')]",
-			"type": "Microsoft.Network/virtualNetworks/subnets",
-			"name": "[concat(variables('clusterVNETName'), '/', variables('mastersSubnetName') )]",
-			"location": "[resourceGroup().location]",
-			"dependsOn": ["[concat('Microsoft.Network/virtualnetworks/', variables('clusterVNETName'))]"],
-			"properties": {
-						"addressPrefix": "[variables('mastersSubnetSpace')]",
-						"routeTable": {"id": "[resourceId('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName'))]"}
-					}
-		},
+		
 		{
 			"comments": "public ip for the cluster, attached to the edge LB",
 			"type": "Microsoft.Network/publicIPAddresses",
