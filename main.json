@@ -185,7 +185,8 @@
 				"addressSpace": {
 					"addressPrefixes": ["[variables('clusterVnetSpaceMain')]"]
 				}
-			}
+			},
+			"subnets": []
 		},
 
 		{
