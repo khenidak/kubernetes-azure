@@ -48,7 +48,7 @@
 		{
 			"type": "Microsoft.Network/routeTables/routes",
 			"apiVersion": "[parameters('networkApiVersion')]",
-			"name": "[concat(parameters('routeTableMinionsName') ,'/', parameters('VNETRoutingTableName'), '-', variables('nodeSeq'))]",
+			"name": "[concat(parameters('subnetName') ,'/', parameters('VNETRoutingTableName'), '-', variables('nodeSeq'))]",
 			"location": "[resourceGroup().location]",
 			"properties": {
 				"addressPrefix": "[concat('10.0.', copyIndex(1) , '.0', '/8')]",
