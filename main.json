@@ -184,18 +184,14 @@
 			"dependsOn": ["[concat('Microsoft.Network/routeTables/', variables('VNETRoutingTableName'))]"],
 			"properties": {
 				"addressSpace": {
-					"addressPrefixes": [
-						"[variables('clusterVnetSpaceMain')]"
-					]
+					"addressPrefixes": ["[variables('clusterVnetSpaceMain')]"]
 				},
 				"subnets": [
 					{
 						"name": "[variables('mastersSubnetName')]",
 						"properties": {
 							"addressPrefix": "[variables('mastersSubnetSpace')]",
-							"routeTable": {
-								"id": "[resourceId('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName'))]"
-							}
+							"routeTable": {"id": "[resourceId('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName'))]"}
 						}
 					}
 				]

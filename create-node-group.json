@@ -43,7 +43,8 @@
 			"dependsOn": [],
 			"location": "[resourceGroup().location]",
 			"properties": {
-					  "addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.0.0', '/16')]"
+					  "addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.0.0', '/16')]", 
+					  "routeTable": {"id": "[resourceId('Microsoft.Network/routeTables/',  parameters('VNETRoutingTableName'))]"}
 					}
 		},
 		{
@@ -52,6 +53,7 @@
 			"name": "[variables('nodesGroupAvSetName')]",
 			"apiVersion": "[parameters('computeApiVersion')]",
 			"location": "[resourceGroup().location]",
+			"dependsOn" : ["[concat('Microsoft.Network/virtualnetworks/', parameters('clusterVNETName') , '/subnets/', variables('subnetName'))]"],
 			"properties": {
 				"platformFaultDomainCount": "3",
 				"platformUpdateDomainCount": "5"
@@ -67,9 +69,8 @@
 				"count": "[parameters('nodesPerGroupCount')]"
 			},
 			"dependsOn": [
-				"[concat('Microsoft.Compute/availabilitySets/', variables('nodesGroupAvSetName'))]",
-				"[concat('Microsoft.Network/virtualnetworks/', parameters('clusterVNETName') , '/subnets/', variables('subnetName'))]"
-			],
+				"[concat('Microsoft.Compute/availabilitySets/', variables('nodesGroupAvSetName'))]"
+					],
 			"properties": {
 				"mode": "incremental",
 				"templateLink": {
