@@ -69,7 +69,7 @@
 			},
 			"dependsOn": [
 				"[concat('Microsoft.Compute/availabilitySets/', variables('nodesGroupAvSetName'))]",
-				"[concat('Microsoft.Network/virtual/network', parameters('clusterVNETName') , '/', variables('subnetName'))]"
+				"[concat('Microsoft.Network/virtualnetworks/', parameters('clusterVNETName') , '/', variables('subnetName'))]"
 			],
 			"properties": {
 				"mode": "incremental",
