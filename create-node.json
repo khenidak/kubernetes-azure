@@ -24,7 +24,8 @@
 		"nodeIndex" : {"type": "int"},
 
 		"nodesGroupAvSetName" : {"type" : "string"},
-		"subnetName" : 		 {"type" : "string"}
+		"subnetName" : 		 {"type" : "string"},
+		"VNETRoutingTableName" : {"type" : "string"}
 	},
 	"variables": {
 		"CoreOs-Stable": {
@@ -44,8 +45,17 @@
 		 "nodeTargetSAPostfix" : "[mod( parameters('nodeIndex') , parameters('nodesSACount') )]"
 	},
 	"resources": [
-		
-		
+		{
+			"type": "Microsoft.Network/routeTables/routes",
+			"apiVersion": "[parameters('networkApiVersion')]",
+			"name": "[concat(parameters('routeTableMinionsName') ,'/', parameters('VNETRoutingTableName'), '-', variables('nodeSeq'))]",
+			"location": "[resourceGroup().location]",
+			"properties": {
+				"addressPrefix": "[concat('10.0.', copyIndex(1) , '.0', '/8')]",
+				"nextHopType": "VirtualAppliance",
+				"nextHopIpAddress": "[concat('10.0.', copyIndex(1) , '.0')]"
+				}
+   		},
 		{
 			"comments" : "create a new nic for this node",
 			"type": "Microsoft.Network/networkInterfaces",
