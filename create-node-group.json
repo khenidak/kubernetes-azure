@@ -92,7 +92,7 @@
 					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
 					"nodesGroupAvSetName" : {"value" : "[variables('nodesGroupAvSetName')]"},
 
-					"subnetName" : {"value: ": "[variables('subnetName')]"}
+					"subnetName" : {"value: ": "[variables('subnetName')]"} 
 				}
 			}
 		}
