@@ -29,7 +29,7 @@
 	},
 	"variables": {
 		"nodesGroupAvSetName": "[concat('nodes-avset-',parameters('nodeGroupIndex'))]",
-		"subnetName" : "[concat('net-node-group-',  parameters('nodeGroupIndex')))]"
+		"subnetName" : "[concat('net-node-group-',  parameters('nodeGroupIndex'))]"
 
 	},
 	"resources": [
