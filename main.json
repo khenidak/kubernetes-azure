@@ -184,9 +184,10 @@
 			"properties": {
 				"addressSpace": {
 					"addressPrefixes": ["[variables('clusterVnetSpaceMain')]"]
-				}
-			},
-			"subnets": []
+				},
+				"subnets": []
+			}
+			
 		},
 
 		{
