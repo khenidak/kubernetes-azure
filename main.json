@@ -194,9 +194,9 @@
 			"comments" : "masters subnet",
 			"apiVersion": "[variables('networkApiVersion')]",
 			"type": "Microsoft.Network/virtualNetworks/subnets",
-			"name": "[concat(parameters('clusterVNETName'), '/', variables('clusterVNETName') )]",
+			"name": "[concat(variables('clusterVNETName'), '/', variables('mastersSubnetName') )]",
 			"location": "[resourceGroup().location]",
-			"dependsOn": ["[concat('Microsoft.Network/virtualnetworks/', variables('VNETRoutingTableName'))]"],
+			"dependsOn": ["[concat('Microsoft.Network/virtualnetworks/', variables('clusterVNETName'))]"],
 			"properties": {
 						"addressPrefix": "[variables('mastersSubnetSpace')]",
 						"routeTable": {"id": "[resourceId('Microsoft.Network/routeTables/',  parameters('VNETRoutingTableName'))]"}
