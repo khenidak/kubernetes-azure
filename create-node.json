@@ -24,7 +24,7 @@
 		"nodeIndex" : {"type": "int"},
 
 		"nodesGroupAvSetName" : {"type" : "string"},
-		"nodegroupSubnetName" : 		 {"type" : "string"},
+		"nodegroupSubnetName" : {"type" : "string"},
 		"VNETRoutingTableName" : {"type" : "string"}
 	},
 	"variables": {
