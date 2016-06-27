@@ -46,14 +46,15 @@
 	},
 	"resources": [
 		{
+			"comments" : "add new route to the new cluster node",
 			"type": "Microsoft.Network/routeTables/routes",
 			"apiVersion": "[parameters('networkApiVersion')]",
 			"name": "[concat(parameters('subnetName') ,'/', parameters('VNETRoutingTableName'), '-', variables('nodeSeq'))]",
 			"location": "[resourceGroup().location]",
 			"properties": {
-				"addressPrefix": "[concat('10.0.', copyIndex(1) , '.0', '/8')]",
+				"addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.0.0', '/16')]",
 				"nextHopType": "VirtualAppliance",
-				"nextHopIpAddress": "[concat('10.0.', copyIndex(1) , '.0')]"
+				"nextHopIpAddress": "[concat('10.', add(parameters('nodeGroupIndex'), 3), '.0.4')]"
 				}
    		},
 		{
