@@ -5,5 +5,4 @@ parameters.json
 
 gitsync-and-deploy.sh
 
-./keys
-./keys/* 
+keys/
