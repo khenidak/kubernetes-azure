@@ -184,7 +184,7 @@
 			"name": "[variables('clusterVNETName')]",
 			"location": "[resourceGroup().location]",
 			"apiVersion": "[variables('networkApiVersion')]",
-			"dependsOn" : ["[concat('/providers/Microsoft.Network/routeTables/',  variables('VNETRoutingTableName'))]"],
+			"dependsOn" : ["[concat('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName'))]"],
 			"properties": {
 				"addressSpace": {
 					"addressPrefixes": ["[variables('clusterVnetSpaceMain')]"]
