@@ -6,3 +6,6 @@ parameters.json
 gitsync-and-deploy.sh
 
 keys/
+
+
+copy-bootstrapscript-to-master.sh

@@ -260,7 +260,38 @@
 						"name": "mastersPool"
 					}
 				],
-				"inboundNatPools": []
+				"inboundNatPools": [],
+				"loadBalancingRules": [
+					{
+						"Name": "lbrule",
+						"properties": {
+						"frontendIPConfiguration": {
+							"id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('clusterLBNameMaster')), '/frontendIpConfigurations/LoadBalancerFrontend-internal')]"
+						},
+						"backendAddressPool": {
+							"id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('clusterLBNameMaster')), '/backendAddressPools/mastersPool')]"
+						},
+						"probe": {
+							"id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('clusterLBNameMaster')), '/probes/kub-api-prop')]"
+						},
+						"protocol": "Tcp",
+						"frontendPort": 8080,
+						"backendPort": 8080,
+						"idleTimeoutInMinutes": 15
+						}
+					}
+					],
+					"probes": [
+							{
+								"name": "kub-api-prop",
+								"properties": {
+								"protocol": "Tcp",
+								"port": 8080,
+								"intervalInSeconds": 15,
+								"numberOfProbes": 2
+								}
+							}
+					]
 			}
 		},
 		{
