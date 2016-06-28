@@ -25,7 +25,7 @@ LOCAL_ETCD_IP=$(ifconfig eth0 | grep 'inet' | cut -d: -f2 | awk '{print $2}')
 INIT_CLUSTER_RING="${LOCAL_ETCD_NAME}=http://${LOCAL_ETCD_IP}:2380," # all other hosts will be concat-ed to this
 CLUSTER_ETCD_SERVERS="http://${LOCAL_ETCD_IP}:2379," #all other etcd servers will concated here 
 INIT_CLUSTER_TOKEN="azure-kubernetes-cluster"
-MAX_SEQ=10 # number of connected vm to masters sub net (after taking out azure reserved ip and the internal load balancer)
+MAX_SEQ=250 # number of connected vm to masters sub net (after taking out azure reserved ip and the internal load balancer)
 BASE_SERVERS_NAME='master'
 LOCAL_SERVER_SEQUENCE=$(hostname | awk -F "-" '{print $2}') 
 

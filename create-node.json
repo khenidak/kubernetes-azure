@@ -43,7 +43,9 @@
 		 "imageReference": "[variables(parameters('coreOSType'))]",
 		 "nodeSeq" : "[concat( parameters('nodeGroupIndex') , '-', parameters('nodeIndex') )]",
 		 "nodeTargetSAPostfix" : "[mod( parameters('nodeIndex') , parameters('nodesSACount') )]",
-		 "nodeName" : "[concat('node-',  variables('nodeSeq'))]"
+		 "nodeName" : "[concat('node-',  variables('nodeSeq'))]",
+		 "nodeIp" : "[concat('10.', add(parameters('nodeGroupIndex'), 3), '.', add(parameters('nodeIndex'), 2)  ,'.0')]",
+		 "nodeRoutePrefix" : "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.', add(parameters('nodeIndex'), 2), '.0', '/8')]"
 	},
 	"resources": [
 		{
@@ -60,7 +62,7 @@
 						"name": "node-ip-config",
 						"properties": {
 							"privateIPAllocationMethod": "Static",
-							"privateIPAddress": "[concat('10.', add(parameters('nodeGroupIndex'), 3), '.0.4')]",
+							"privateIPAddress": "[variables('nodeIp')]",
 							"subnet": {
 								"id": "[ concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/', parameters('nodegroupSubnetName') )  ]"
 							},
@@ -125,9 +127,9 @@
 			"location": "[resourceGroup().location]",
 		    "dependsOn": ["[concat('Microsoft.Compute/virtualMachines/' ,  variables('nodeName') )]"],
 			"properties": {
-				"addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.0.0', '/16')]",
+				"addressPrefix": "[variables('nodeRoutePrefix')]",
 				"nextHopType": "VirtualAppliance",
-				"nextHopIpAddress": "[concat('10.', add(parameters('nodeGroupIndex'), 3), '.0.4')]"
+				"nextHopIpAddress": "[variables('nodeIp')]"
 				}
    		}
 	]

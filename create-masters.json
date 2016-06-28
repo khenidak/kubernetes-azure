@@ -80,7 +80,6 @@
 				"count": "[parameters('mastersCount')]"
 			},
 			"properties": {
-				"enableIPForwarding": true,
 				"ipConfigurations": [
 					{
 						"name": "ipconfig1",

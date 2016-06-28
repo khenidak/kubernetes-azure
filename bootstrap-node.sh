@@ -6,18 +6,18 @@ AZURE_USER=$1 #passed by the template
 
 TARGET_LOG_FILE="/home/${AZURE_USER}/bootstrap.log"
 
+
 exec >> "${TARGET_LOG_FILE}"
 exec 2>&1
 
 
 
 THIS_NODE_IP=$(ifconfig eth0 | grep 'inet' | cut -d: -f2 | awk '{print $2}') 					
-CLASS_C=$(echo ${THIS_NODE_IP} | awk -F "." '{printf "%s.%s.%s.", $1, $2, $3}') 
-CBR0_IP="${CLASS_C}128/25"
+THREE_SEGS=$(echo ${THIS_NODE_IP} | awk -F "." '{printf "%s.%s.%s.", $1, $2, $3}') 
+CBR0_IP="${THREE_SEGS}1/24"
 
 
 echo  "Resolved CBR IP as ${CBR0_IP}"
-
 
 
 
@@ -91,7 +91,7 @@ Requires=docker.service
 [Service] 
 
 TimeoutStartSec=5 
-ExecStart=/srv/kubernetes-server/bin/kubelet --api-servers=http://10.0.0.10:8080  
+ExecStart=/srv/kubernetes-server/bin/kubelet --api-servers=http://10.0.0.4:8080  
 
 [Install] 
 WantedBy=multi-user.target
@@ -118,7 +118,7 @@ Requires=docker.service
 [Service] 
 
 TimeoutStartSec=5 
-ExecStart=/srv/kubernetes-server/bin/kube-proxy --master=http://10.0.0.10:8080
+ExecStart=/srv/kubernetes-server/bin/kube-proxy --master=http://10.0.0.4:8080
 
 [Install] 
 WantedBy=multi-user.target
