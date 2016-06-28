@@ -1,5 +1,14 @@
 #!/bin/bash
 
+#pre work
+AZURE_USER=$1 #passed by the template
+
+
+TARGET_LOG_FILE="/home/${AZURE_USER}/bootstrap.log"
+
+exec >> "${TARGET_LOG_FILE}"
+exec 2>&1
+
 
 
 THIS_NODE_IP=$(ifconfig eth0 | grep 'inet' | cut -d: -f2 | awk '{print $2}') 					
@@ -7,10 +16,13 @@ CLASS_C=$(echo ${THIS_NODE_IP} | awk -F "." '{printf "%s.%s.%s.", $1, $2, $3}')
 CBR0_IP="${CLASS_C}128/25"
 
 
-echo  "Resolved CBR) IP as ${CBR0_IP}"
+echo  "Resolved CBR IP as ${CBR0_IP}"
 
 
 
+
+
+echo "+ downloading kubernetes"
 
 #- Get Kubernetes 
 
@@ -20,6 +32,8 @@ tar -xzvf ./kubernetes/server/kubernetes-server-linux-amd64.tar.gz
 
 sudo mkdir -p /srv/kubernetes-server/bin
 sudo cp -r ./kubernetes/server/bin/* /srv/kubernetes-server/bin/
+
+echo "+ stop docker, then configure"
 
 
 
@@ -62,6 +76,9 @@ sudo systemctl restart docker.service
 
 
 
+echo "+ docker configured and started with the new options"
+
+
 sudo touch /etc/systemd/system/kubelet.service
 
 
@@ -85,6 +102,7 @@ EOL
 sudo systemctl enable /etc/systemd/system/kubelet.service
 sudo systemctl start kubelet.service
 
+echo "+ started kubelet"
 
 
 
@@ -111,6 +129,7 @@ EOL
 sudo systemctl enable /etc/systemd/system/kube-proxy.service
 sudo systemctl start kube-proxy.service
 
+echo "+ started kubernetes proxy"
 
 
 

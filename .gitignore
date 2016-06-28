@@ -9,3 +9,4 @@ keys/
 
 
 copy-bootstrapscript-to-master.sh
+configure-masters.sh
