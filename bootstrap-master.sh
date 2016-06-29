@@ -93,7 +93,6 @@ ExecStart=/usr/bin/docker run   -d \
 		-p 4001:4001 \
 		-p 2380:2380 \
 		-p 2379:2379 \
- 		--hostname=${LOCAL_ETCD_NAME} \
 		--name etcd quay.io/coreos/etcd:v2.2.1 \
 		--name "${LOCAL_ETCD_NAME}" \
  		--advertise-client-urls http://${LOCAL_ETCD_IP}:2379,http://${LOCAL_ETCD_IP}:4001 \
