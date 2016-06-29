@@ -133,3 +133,4 @@ echo "+ started kubernetes proxy"
 
 
 
+echo "+ Done!"

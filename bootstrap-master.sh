@@ -239,3 +239,4 @@ sudo systemctl start kubernetesControllerManager-container.service
 
 
 
+echo "+ Done!"
