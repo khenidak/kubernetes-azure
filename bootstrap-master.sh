@@ -86,7 +86,13 @@ Requires=docker.service
 TimeoutStartSec=10 
 ExecStartPre=-/usr/bin/docker kill etcd
 ExecStartPre=-/usr/bin/docker rm etcd
-ExecStart=/usr/bin/docker run -d -v /usr/share/ca-certificates/:/etc/ssl/certs  -v /home/${AZURE_USER}/etd-data:/etc/etcd-data/ -p 4001:4001 -p 2380:2380 -p 2379:2379 \
+ExecStart=/usr/bin/docker run   -d \
+		--net=host \
+	    -v /usr/share/ca-certificates/:/etc/ssl/certs \
+		-v /home/${AZURE_USER}/etd-data:/etc/etcd-data/ \
+		-p 4001:4001 \
+		-p 2380:2380 \
+		-p 2379:2379 \
  		--hostname=${LOCAL_ETCD_NAME} \
 		--name etcd quay.io/coreos/etcd:v2.2.1 \
 		--name "${LOCAL_ETCD_NAME}" \
