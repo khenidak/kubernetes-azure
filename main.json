@@ -31,7 +31,7 @@
 		},
 		"mastersCount": {
 			"type": "int",
-			"defaultValue": 5,
+			"defaultValue": 3,
 			"metadata": {
 				"description": "Masters count (each runs etcd, each on a storage account, choose accordingly)"
 			},
@@ -39,7 +39,7 @@
 		},
 		"nodesPerGroupCount": {
 			"type": "int",
-			"defaultValue": 2,
+			"defaultValue": 1,
 			"metadata": {
 				"description": "Node count per node-group, max allowed 255"
 			},
