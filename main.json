@@ -345,7 +345,6 @@
 				"Microsoft.Resources/deployments/create-masters",
 				"[variables('nodesSALoop')]",
 				"[concat('Microsoft.Network/virtualnetworks/', variables('clusterVNETName'))]",
-				"[concat('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName')) ]",
 				"[concat('Microsoft.Network/loadBalancers/', variables('clusterLBName'))]"
 			],
 			"properties": {
