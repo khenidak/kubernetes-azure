@@ -26,7 +26,7 @@
 		"coreOSType": {"type": "string"},
 		
 		"nodeGroupIndex" : {"type": "int"},
-		"nodesSubNetName" : {"type" : "string"}
+		"VNETRoutingTableName" : {"type" : "string"}
 
 	},
 	"variables": {
@@ -36,11 +36,23 @@
 	},
 	"resources": [
 		{
+			"comments" : "create subnet for the new node group",
+			"apiVersion": "[parameters('networkApiVersion')]",
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+			"name": "[concat(parameters('clusterVNETName'), '/',  variables('nodegroupSubnetName') )]",
+			"location": "[resourceGroup().location]",
+			"properties": {
+					  "addressPrefix": "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.0.0', '/16')]", 
+					  "routeTable": {"id": "[resourceId('Microsoft.Network/routeTables/',  parameters('VNETRoutingTableName'))]"}
+					}
+		},
+		{
 			"comments": "Node Availability Set",
 			"type": "Microsoft.Compute/availabilitySets",
 			"name": "[variables('nodesGroupAvSetName')]",
 			"apiVersion": "[parameters('computeApiVersion')]",
 			"location": "[resourceGroup().location]",
+			"dependsOn" : ["[concat('Microsoft.Network/virtualnetworks/', parameters('clusterVNETName') , '/subnets/', variables('nodegroupSubnetName'))]"],
 			"properties": {
 				"platformFaultDomainCount": "3",
 				"platformUpdateDomainCount": "5"
@@ -85,7 +97,8 @@
 					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
 					"nodesGroupAvSetName" : {"value" : "[variables('nodesGroupAvSetName')]"},
 
-					"nodesSubNetName" : {"value" : "[parameters('nodesSubNetName')]"}
+					"nodegroupSubnetName" : {"value": "[variables('nodegroupSubnetName')]"},
+					"VNETRoutingTableName" : {"value" : "[parameters('VNETRoutingTableName')]"}
 
 				}
 			}

@@ -49,11 +49,10 @@
 			"type": "int",
 			"defaultValue": 1	,
 			"metadata": {
-				"description": "node group count (each is an availbility  set)"
+				"description": "general node group count (each is an availbility  set)"
 			},
-			"maxValue": 255
+			"maxValue": 242
 		},
-
 		"nodesVMSku": {
 			"type": "string",
 			"defaultValue": "Standard_A1",
@@ -110,6 +109,8 @@
 		"templateCreateMasters": "create-masters.json",
 		"templateCreateNodeGroup": "create-node-group.json",
 		"templateCreateNode" : "create-node.json",
+		"templateCreateNodeGroupSpecial": "create-node-group-special.json",
+		"templateCreateNodeSpecial" : "create-node-special.json",
 		"masterbootstrapScript" : "bootstrap-master.sh",
 		
 
@@ -123,6 +124,8 @@
 		"nodesSALoop": "nodeSALoop",
 		"clusterVNETName": "[concat(  variables('clusterNameClean') , '-vnet')]",
 		"mastersSubnetName": "masters-net",
+		"NodesSubnetName": "nodes-net",
+		"NodesSubnetSpace": "10.1.0.0/16",
 		"clusterVnetSpaceMain": "10.0.0.0/8",
 		"mastersSubnetSpace": "10.0.0.0/24",
 		"VNETRoutingTableName": "[concat(variables('clusterNameClean'), '-routing-table' )]",
@@ -166,25 +169,11 @@
 			}
 		},
 		{
-			"comments": "Routing table - all subnet",
-			"type": "Microsoft.Network/routeTables",
-			"apiVersion": "[variables('networkApiVersion')]",
-			"name": "[variables('VNETRoutingTableName')]",
-			"location": "[resourceGroup().location]",
-			"tags": {
-				"displayName": "vnet routing table"
-			},
-			"properties": {
-				"routes": []
-			}
-		},
-		{
 			"comments": "Cluster vnet",
 			"type": "Microsoft.Network/virtualNetworks",
 			"name": "[variables('clusterVNETName')]",
 			"location": "[resourceGroup().location]",
 			"apiVersion": "[variables('networkApiVersion')]",
-			"dependsOn" : ["[concat('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName'))]"],
 			"properties": {
 				"addressSpace": {
 					"addressPrefixes": ["[variables('clusterVnetSpaceMain')]"]
@@ -193,10 +182,16 @@
 					{
 						"name": "[variables('mastersSubnetName') ]",
 						"properties": {
-								"addressPrefix": "[variables('mastersSubnetSpace')]",
-								"routeTable": {"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/routeTables/',  variables('VNETRoutingTableName'))]"}
+								"addressPrefix": "[variables('mastersSubnetSpace')]"
+							}
+					},
+					{
+						"name": "[variables('NodesSubnetName') ]",
+						"properties": {
+								"addressPrefix": "[variables('NodesSubnetAddressSpace')]"
 							}
 					}
+
 				]
 			}
 			
@@ -299,45 +294,6 @@
 			}
 		},
 		{
-			"comments": "Creates all masters calls into sub templates",
-			"type": "Microsoft.Resources/deployments",
-			"apiVersion": "[variables('resourceApiVersion')]",
-			"name": "create-masters",
-			"dependsOn": [
-				"[variables('mastersSALoop')]",
-				"[concat('Microsoft.Network/loadbalancers/', variables('clusterLBNameMaster'))]",
-				"[concat('Microsoft.Network/virtualNetworks/', variables('clusterVNETName')) ]"
-			],
-			"properties": {
-				"mode": "Incremental",
-				"templateLink": {
-					"uri": "[concat(variables('baseTemplatesUri'), variables('templateCreateMasters'))]",
-					"contentVersion": "1.0.0.0"
-				},
-				"parameters": {
-					"computeApiVersion": {"value": "[variables('computeApiVersion')]"},
-					"networkApiVersion": {"value": "[variables('networkApiVersion')]"},
-					"storageApiVersion": {"value": "[variables('storageApiVersion')]"},
-					"clusterName": {"value": "[parameters('clusterName')]"},
-					"clusterNameClean": {"value": "[variables('clusterNameClean')]"},
-					"clusterVNETName": {"value": "[variables('clusterVNETName')]"},
-					"mastersSubnetName": {"value": "[variables('mastersSubnetName')]"},
-					"clusterLBNameMaster": {"value": "[variables('clusterLBNameMaster')]"},
-					"mastersCount": {"value": "[parameters('mastersCount')]"},
-					"mastersStorageAccountprefix": {"value": "[variables('mastersStorageAccountprefix')]"},
-					"sshKeyPath": {"value": "[variables('sshKeyPath')]"},
-					"sshKeyData": {"value": "[parameters('sshKeyData')]"},
-					"adminUsername": {"value": "[parameters('adminUsername')]"},
-					"mastersVMSku": {"value": "[parameters('mastersVMSku')]"},
-					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
-					"clusterLBName" : {"value" : "[variables('clusterLBName')]"},
-					"baseTemplatesUri" : {"value": "[variables('baseTemplatesUri')]" },
-					"masterbootstrapScript" : {"value": "[variables('masterbootstrapScript')]" }
-	
-				}
-			}
-		},	
-		{
 			"comments": "Creates node groups (each calls node creation)",
 			"type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('resourceApiVersion')]",
@@ -370,12 +326,61 @@
 					"clusterVNETName": {"value": "[variables('clusterVNETName')]"},
 					"nodesStorageAccountprefix": {"value": "[variables('nodesStorageAccountprefix')]"},
 
-					"nodesPerGroupCount": {"value": "[parameters('nodesPerGroupCount')]"},
+					"nodesPerGroupCount": {"value": "[parameters('nodesPerGroupCount]')]"},
 					"nodeGroupIndex" : {"value": "[copyIndex()]"},
 				    "nodesSACount":  {"value": "[parameters('nodesSACount')]"},
 	
 					"baseTemplatesUri" : {"value": "[variables('baseTemplatesUri')]"},
 		 			"templateCreateNode" : {"value": "[variables('templateCreateNode')]"},
+
+					"sshKeyPath": {"value": "[variables('sshKeyPath')]"},
+					"sshKeyData": {"value": "[parameters('sshKeyData')]"},
+					"adminUsername": {"value": "[parameters('adminUsername')]"},
+					"nodesVMSku": {"value": "[parameters('nodesVMSku')]"},
+					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
+					"nodesSubNetName" : {"value" : "[variables('NodesSubnetName')]"}
+				}
+			}
+		},
+		{
+			"comments": "Creates special node groups (each calls node creation)",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('resourceApiVersion')]",
+			"name": "[concat('create-node-group-special-', copyIndex())]",
+			"copy": {
+				"name": "nodeGroupsLoop",
+				"count": "[parameters('nodesGroupCountSpecial')]"
+			},
+			"dependsOn": [
+				"Microsoft.Resources/deployments/create-masters",
+				"[variables('nodesSALoop')]",
+				"[concat('Microsoft.Network/virtualnetworks/', variables('clusterVNETName'))]",
+				"[concat('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName')) ]",
+				"[concat('Microsoft.Network/loadBalancers/', variables('clusterLBName'))]"
+			],
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[concat(variables('baseTemplatesUri'), variables('templateCreateNodeGroupSpecial'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"computeApiVersion": {"value": "[variables('computeApiVersion')]"},
+					"networkApiVersion": {"value": "[variables('networkApiVersion')]"},
+					"storageApiVersion": {"value": "[variables('storageApiVersion')]"},
+					"resourceApiVersion": {"value": "[variables('resourceApiVersion')]"},
+					
+					"clusterName": {"value": "[parameters('clusterName')]"},
+					"clusterNameClean": {"value": "[variables('clusterNameClean')]"},
+					"clusterVNETName": {"value": "[variables('clusterVNETName')]"},
+					"nodesStorageAccountprefix": {"value": "[variables('nodesStorageAccountprefix')]"},
+
+					"nodesPerGroupCount": {"value": "[parameters('nodesPerGroupCountSpecial]')]"},
+					"nodeGroupIndex" : {"value": "[copyIndex()]"},
+				    "nodesSACount":  {"value": "[parameters('nodesSACount')]"},
+	
+					"baseTemplatesUri" : {"value": "[variables('baseTemplatesUri')]"},
+		 			"templateCreateNode" : {"value": "[variables('templateCreateNodeSpecial')]"},
 
 					"sshKeyPath": {"value": "[variables('sshKeyPath')]"},
 					"sshKeyData": {"value": "[parameters('sshKeyData')]"},

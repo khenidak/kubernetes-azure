@@ -24,7 +24,8 @@
 		"nodeIndex" : {"type": "int"},
 
 		"nodesGroupAvSetName" : {"type" : "string"},
-		"nodesSubNetName" : {"type" : "string"}
+		"nodegroupSubnetName" : {"type" : "string"},
+		"VNETRoutingTableName" : {"type" : "string"}
 	},
 	"variables": {
 		"CoreOs-Stable": {
@@ -63,7 +64,7 @@
 							"privateIPAllocationMethod": "Static",
 							"privateIPAddress": "[variables('nodeIp')]",
 							"subnet": {
-								"id": "[ concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/', parameters('nodesSubNetName') )  ]"
+								"id": "[ concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/', parameters('nodegroupSubnetName') )  ]"
 							},
 							"loadBalancerBackendAddressPools": []
 						}

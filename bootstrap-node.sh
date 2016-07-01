@@ -11,10 +11,13 @@ exec >> "${TARGET_LOG_FILE}"
 exec 2>&1
 
 
+cd /home/${AZURE_USER}
+
 
 THIS_NODE_IP=$(ifconfig eth0 | grep 'inet' | cut -d: -f2 | awk '{print $2}') 					
 THREE_SEGS=$(echo ${THIS_NODE_IP} | awk -F "." '{printf "%s.%s.%s.", $1, $2, $3}') 
 CBR0_IP="${THREE_SEGS}1/24"
+
 
 
 echo  "Resolved CBR IP as ${CBR0_IP}"
@@ -131,6 +134,9 @@ sudo systemctl start kube-proxy.service
 
 echo "+ started kubernetes proxy"
 
+
+#TODO: Add symbolic link 
+#TODO: Add node group as a node label on the current node
 
 
 echo "+ Done!"
