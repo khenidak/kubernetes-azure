@@ -294,6 +294,45 @@
 			}
 		},
 		{
+			"comments": "Creates all masters calls into sub templates",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('resourceApiVersion')]",
+			"name": "create-masters",
+			"dependsOn": [
+				"[variables('mastersSALoop')]",
+				"[concat('Microsoft.Network/loadbalancers/', variables('clusterLBNameMaster'))]",
+				"[concat('Microsoft.Network/virtualNetworks/', variables('clusterVNETName')) ]"
+			],
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[concat(variables('baseTemplatesUri'), variables('templateCreateMasters'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"computeApiVersion": {"value": "[variables('computeApiVersion')]"},
+					"networkApiVersion": {"value": "[variables('networkApiVersion')]"},
+					"storageApiVersion": {"value": "[variables('storageApiVersion')]"},
+					"clusterName": {"value": "[parameters('clusterName')]"},
+					"clusterNameClean": {"value": "[variables('clusterNameClean')]"},
+					"clusterVNETName": {"value": "[variables('clusterVNETName')]"},
+					"mastersSubnetName": {"value": "[variables('mastersSubnetName')]"},
+					"clusterLBNameMaster": {"value": "[variables('clusterLBNameMaster')]"},
+					"mastersCount": {"value": "[parameters('mastersCount')]"},
+					"mastersStorageAccountprefix": {"value": "[variables('mastersStorageAccountprefix')]"},
+					"sshKeyPath": {"value": "[variables('sshKeyPath')]"},
+					"sshKeyData": {"value": "[parameters('sshKeyData')]"},
+					"adminUsername": {"value": "[parameters('adminUsername')]"},
+					"mastersVMSku": {"value": "[parameters('mastersVMSku')]"},
+					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
+					"clusterLBName" : {"value" : "[variables('clusterLBName')]"},
+					"baseTemplatesUri" : {"value": "[variables('baseTemplatesUri')]" },
+					"masterbootstrapScript" : {"value": "[variables('masterbootstrapScript')]" }
+	
+				}
+			}
+		},
+		{
 			"comments": "Creates node groups (each calls node creation)",
 			"type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('resourceApiVersion')]",
