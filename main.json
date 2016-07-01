@@ -341,55 +341,6 @@
 					"nodesSubNetName" : {"value" : "[variables('NodesSubnetName')]"}
 				}
 			}
-		},
-		{
-			"comments": "Creates special node groups (each calls node creation)",
-			"type": "Microsoft.Resources/deployments",
-			"apiVersion": "[variables('resourceApiVersion')]",
-			"name": "[concat('create-node-group-special-', copyIndex())]",
-			"copy": {
-				"name": "nodeGroupsLoop",
-				"count": "[parameters('nodesGroupCountSpecial')]"
-			},
-			"dependsOn": [
-				"Microsoft.Resources/deployments/create-masters",
-				"[variables('nodesSALoop')]",
-				"[concat('Microsoft.Network/virtualnetworks/', variables('clusterVNETName'))]",
-				"[concat('Microsoft.Network/routeTables/',  variables('VNETRoutingTableName')) ]",
-				"[concat('Microsoft.Network/loadBalancers/', variables('clusterLBName'))]"
-			],
-			"properties": {
-				"mode": "Incremental",
-				"templateLink": {
-					"uri": "[concat(variables('baseTemplatesUri'), variables('templateCreateNodeGroupSpecial'))]",
-					"contentVersion": "1.0.0.0"
-				},
-				"parameters": {
-					"computeApiVersion": {"value": "[variables('computeApiVersion')]"},
-					"networkApiVersion": {"value": "[variables('networkApiVersion')]"},
-					"storageApiVersion": {"value": "[variables('storageApiVersion')]"},
-					"resourceApiVersion": {"value": "[variables('resourceApiVersion')]"},
-					
-					"clusterName": {"value": "[parameters('clusterName')]"},
-					"clusterNameClean": {"value": "[variables('clusterNameClean')]"},
-					"clusterVNETName": {"value": "[variables('clusterVNETName')]"},
-					"nodesStorageAccountprefix": {"value": "[variables('nodesStorageAccountprefix')]"},
-
-					"nodesPerGroupCount": {"value": "[parameters('nodesPerGroupCountSpecial]')]"},
-					"nodeGroupIndex" : {"value": "[copyIndex()]"},
-				    "nodesSACount":  {"value": "[parameters('nodesSACount')]"},
-	
-					"baseTemplatesUri" : {"value": "[variables('baseTemplatesUri')]"},
-		 			"templateCreateNode" : {"value": "[variables('templateCreateNodeSpecial')]"},
-
-					"sshKeyPath": {"value": "[variables('sshKeyPath')]"},
-					"sshKeyData": {"value": "[parameters('sshKeyData')]"},
-					"adminUsername": {"value": "[parameters('adminUsername')]"},
-					"nodesVMSku": {"value": "[parameters('nodesVMSku')]"},
-					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
-					"VNETRoutingTableName" : {"value" : "[variables('VNETRoutingTableName')]"}
-				}
-			}
 		}
 	]
 }
