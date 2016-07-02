@@ -60,6 +60,7 @@ echo "DOCKER_OPTS=--bridge=cbr0 --iptables=false   --ip-masq=false" | sudo tee -
 
 # turn on masqarading for out going traffic 
 sudo iptables -t nat -A POSTROUTING ! -d 10.0.0.0/8 -m addrtype ! --dst-type LOCAL -j MASQUERADE
+sudo iptables -t nat -A POSTROUTING ! -d 11.0.0.0/8 -m addrtype ! --dst-type LOCAL -j MASQUERADE
 
 
 

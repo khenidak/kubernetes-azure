@@ -189,7 +189,7 @@
 					{
 						"name": "[variables('NodesSubnetName') ]",
 						"properties": {
-								"addressPrefix": "[variables('nodesSubnetAddressSpace')]"
+								"addressPrefix": "[variables('NodesSubnetSpace')]"
 							}
 					}
 
