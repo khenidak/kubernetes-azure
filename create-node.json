@@ -43,8 +43,8 @@
 		 "nodeSeq" : "[concat( parameters('nodeGroupIndex') , '-', parameters('nodeIndex') )]",
 		 "nodeTargetSAPostfix" : "[mod( parameters('nodeIndex') , parameters('nodesSACount') )]",
 		 "nodeName" : "[concat('node-',  variables('nodeSeq'))]",
-		 "nodeIp" : "[concat('10.', add(parameters('nodeGroupIndex'), 3), '.', add(parameters('nodeIndex'), 2)  ,'.0')]",
-		 "nodeRoutePrefix" : "[concat('10.', add(parameters('nodeGroupIndex'), 3) , '.', add(parameters('nodeIndex'), 2), '.0', '/24')]"
+		 "nodeIp" : "[concat('11.', add(parameters('nodeGroupIndex'), 1), '.', add(parameters('nodeIndex'), 1)  ,'.0')]",
+		 "nodeRoutePrefix" : "[concat('11.', add(parameters('nodeGroupIndex'), 3) , '.', add(parameters('nodeIndex'), 2), '.0', '/24')]"
 	},
 	"resources": [
 		{

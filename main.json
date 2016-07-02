@@ -125,8 +125,9 @@
 		"clusterVNETName": "[concat(  variables('clusterNameClean') , '-vnet')]",
 		"mastersSubnetName": "masters-net",
 		"NodesSubnetName": "nodes-net",
-		"NodesSubnetSpace": "10.1.0.0/16",
+		"NodesSubnetSpace": "11.0.0.0/8",
 		"clusterVnetSpaceMain": "10.0.0.0/8",
+		"clusterVnetSpaceNodes": "11.0.0.0/8",
 		"mastersSubnetSpace": "10.0.0.0/24",
 		"VNETRoutingTableName": "[concat(variables('clusterNameClean'), '-routing-table' )]",
 		"clusterPipName": "[concat(parameters('clusterName'), '-pip' )]",
@@ -176,7 +177,7 @@
 			"apiVersion": "[variables('networkApiVersion')]",
 			"properties": {
 				"addressSpace": {
-					"addressPrefixes": ["[variables('clusterVnetSpaceMain')]"]
+					"addressPrefixes": ["[variables('clusterVnetSpaceMain')]","[variables('clusterVnetSpaceNodes')]" ]
 				},
 				"subnets": [
 					{
@@ -188,7 +189,7 @@
 					{
 						"name": "[variables('NodesSubnetName') ]",
 						"properties": {
-								"addressPrefix": "[variables('NodesSubnetAddressSpace')]"
+								"addressPrefix": "[variables('nodesSubnetAddressSpace')]"
 							}
 					}
 
