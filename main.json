@@ -39,7 +39,7 @@
 		},
 		"nodesPerGroupCount": {
 			"type": "int",
-			"defaultValue": 1,
+			"defaultValue": 3,
 			"metadata": {
 				"description": "Node count per node-group, max allowed 255"
 			},
@@ -47,7 +47,7 @@
 		},
 		"nodesGroupCount": {
 			"type": "int",
-			"defaultValue": 1	,
+			"defaultValue": 3	,
 			"metadata": {
 				"description": "general node group count (each is an availbility  set)"
 			},
@@ -365,7 +365,7 @@
 					"clusterVNETName": {"value": "[variables('clusterVNETName')]"},
 					"nodesStorageAccountprefix": {"value": "[variables('nodesStorageAccountprefix')]"},
 
-					"nodesPerGroupCount": {"value": "[parameters('nodesPerGroupCount]')]"},
+					"nodesPerGroupCount": {"value": "[parameters('nodesPerGroupCount')]"},
 					"nodeGroupIndex" : {"value": "[copyIndex()]"},
 				    "nodesSACount":  {"value": "[parameters('nodesSACount')]"},
 	
