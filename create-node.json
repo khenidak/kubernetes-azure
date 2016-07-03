@@ -67,7 +67,7 @@
 
 					}
     	},
-		{
+		{ 
 			"comments" : "create a new nic for this node",
 			"type": "Microsoft.Network/networkInterfaces",
 			"name": "[concat('node-nic-', variables('nodeSeq'))]",
