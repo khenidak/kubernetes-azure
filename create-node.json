@@ -73,7 +73,9 @@
 			"name": "[concat('node-nic-', variables('nodeSeq'))]",
 			"apiVersion": "[parameters('networkApiVersion')]",
 			"location": "[resourceGroup().location]",
-			"dependsOn": ["[concat( Microsoft.Network/virtualNetworks/', parameters('clusterVnetName') ,'/subnets/', variables('nodeSubnetName') )]"],
+			"dependsOn": [
+							"[concat( 'Microsoft.Network/virtualNetworks/', parameters('clusterVnetName') ,'/subnets/', variables('nodeSubnetName') )]"
+						],
 			"properties": {
 				"enableIPForwarding": true,
 				"ipConfigurations": [
