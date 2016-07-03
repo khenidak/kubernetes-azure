@@ -120,7 +120,7 @@
 		"nodesStorageAccountprefix": "[ concat(variables('constAddonNodeStorageAccountPrefix') ,   variables('clusterNameClean') ) ]",
 		"nodesSALoop": "nodeSALoop",
 		"clusterVNETName": "[concat(  variables('clusterNameClean') , '-vnet')]",
-		"routingTableNameMain" : "concat(variables('clusterNameClean'), '-rTable')",
+		"routingTableNameMain" : "[concat(variables('clusterNameClean'), '-rTable')]",
 		"mastersSubnetName": "masters-net",
 		"masetersNsgName" : "masters-nsg",
 		"NodesSubnetName": "nodes-net",
