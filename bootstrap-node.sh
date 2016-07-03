@@ -16,7 +16,8 @@ cd /home/${AZURE_USER}
 
 THIS_NODE_IP=$(ifconfig eth0 | grep 'inet' | cut -d: -f2 | awk '{print $2}') 					
 THREE_SEGS=$(echo ${THIS_NODE_IP} | awk -F "." '{printf "%s.%s.%s.", $1, $2, $3}') 
-CBR0_IP="${THREE_SEGS}1/24"
+CBR0_IP="${THREE_SEGS}128/25"
+
 
 
 
