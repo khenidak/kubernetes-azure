@@ -143,7 +143,7 @@
 		{
       		"type": "Microsoft.Network/routeTables/routes",
       		"apiVersion": "[variables('networkApiVersion')]",
-      		"name": "[concat(variables('routingTableNameMain') ,'/', variables('nodeRouteName'))]",
+      		"name": "[concat(parameters('routingTableNameMain') ,'/', variables('nodeRouteName'))]",
       		"location": "[resourceGroup().location]",
       		"dependsOn": [
        			 "[concat('Microsoft.Compute/virtualMachines/', variables('nodeName'))]"
