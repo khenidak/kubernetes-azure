@@ -4,6 +4,7 @@
 # This script connects to masters and configure them 
 
 
+#todo: getopts
 location="westus" # Resorce group location
 dns_label="my-kub-cluster03" # DNS label for cluster
 key_file="./keys/vmkey" # location for ssh key file
@@ -14,8 +15,8 @@ masters_count="5" # number of masters in this cluster
 node_group_start_idx=0
 node_in_group_start_idx=0
 
-node_group_count=3
-nodes_per_group=3
+node_group_count=1
+nodes_per_group=2
 
 
 
