@@ -142,7 +142,7 @@
 		},
 		{
       		"type": "Microsoft.Network/routeTables/routes",
-      		"apiVersion": "[variables('networkApiVersion')]",
+      		"apiVersion": "[parameters('networkApiVersion')]",
       		"name": "[concat(parameters('routingTableNameMain') ,'/', variables('nodeRouteName'))]",
       		"location": "[resourceGroup().location]",
       		"dependsOn": [
