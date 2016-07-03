@@ -1,7 +1,17 @@
 #!/bin/bash
 
-## if you used Ubuntu you can use Azure's Script Extention
-## you will have to make sure that systemd is installed. 
+# This script boot strap kubernetes cluster (nodes, not masters) by
+# 1: download kubernetes bins
+# 2: starts kubelet pointing to 10.0.0.4 (Azure internal load balancer infront of masters)
+# 3: starts kube-proxy point to 10.0.0.4 as well
+# 4: assigns a kubernetes label to current node = node group sequence 
+# nodes are expected to follow an ip scheme 11.<node-group>.<node seq starting at 0>.4 (refer to readme.md file for more) 
+# all configuration is done via systemd units.
+
+# You can run this script via Azure custom script extentions on systemd + docker enabled hosts
+  
+
+
 
 #pre work
 AZURE_USER=$1 #passed by the template
@@ -142,6 +152,8 @@ echo "+ started kubernetes proxy"
 
 #add node group label to current node
 cd /home/${AZURE_USER}/
+
+sleep 30s # wait until node registers itself, note the node is active once registered
 echo "Node Labeling: ${THIS_NODE_NAME}  with nodegoup=${NODE_GROUPLABEL}"
 ./kubernetes/cluster/kubectl.sh label nodes ${THIS_NODE_NAME} nodegoup=${NODE_GROUPLABEL} --server=http://10.0.0.4:8080
 

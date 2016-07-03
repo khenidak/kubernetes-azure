@@ -1,15 +1,25 @@
 #!/bin/bash
 
-# Core Os - does not support Extention yet (i.e. custom bootstrap script)
+# Core Os - does not support Azure Script Extention yet (i.e. custom bootstrap script)
 # This script connects to masters and configure them 
+
 
 location="westus" # Resorce group location
 dns_label="my-kub-cluster03" # DNS label for cluster
 key_file="./keys/vmkey" # location for ssh key file
 azure_user_name="azureuser" # user name to connect to the cluster
-masters_count="5" # 
+masters_count="5" # number of masters in this cluster  
+
+#assuming you are always configure the last added node group or nodes
+node_group_start_idx=0
+node_in_group_start_idx=0
+
 node_group_count=3
 nodes_per_group=3
+
+
+
+
 
 
 thishost="${dns_label}.${location}.cloudapp.azure.com"
@@ -45,14 +55,19 @@ scp -o "StrictHostKeyChecking no"  -i ${key_file} -P ${thisport}  ${key_file} ${
 
 
 
-groupcounter=0
+groupcounter=$node_group_start_idx
 
 
 while [  $groupcounter -lt $node_group_count ]; do
-	actual_seg2_ip=`expr $groupcounter + 1`
-	nodecounter=0
+	
+	actual_seg2_ip="${groupcounter}" #`expr $groupcounter + 1` -- we used to start from 11.1.x.x, now we start at 11.0.x.x
+	
+	nodecounter=$node_in_group_start_idx
+	
 	while [  $nodecounter -lt $nodes_per_group ]; do
-	actual_seg3_ip=`expr $nodecounter + 1`
+# node IPs are at 11.x.x.4 as azure reserves the first few addresses for each subnet
+
+	actual_seg3_ip="${nodecounter}" #`expr $nodecounter + 1` -- we used to start from 11.x.1.4, now we start at 11.x.0.4
 
 		thisnodeaddress="11.${actual_seg2_ip}.${actual_seg3_ip}.4"
 		echo "+ Performing Node Configuration on: ${thisnodeaddress}"

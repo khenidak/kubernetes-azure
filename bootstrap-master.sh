@@ -1,7 +1,15 @@
 #!/bin/bash 
 
+# This script boot strap kubernetes cluster (master nodes) by
+# 1: configure etcd cluster (based on the # of nodes available in the subnet). etcd runs as a container not on host
+# 2: runs Kubernetes api server, scheduler & controller Manager via hyper-kube container images on docker. 
+# all configuration is done via systemd units.
+
+# You can run this script via Azure custom script extentions on systemd + docker enabled hosts
+  
+
 #pre work
-AZURE_USER=$1 #passed by the template
+AZURE_USER=$1 #passed by the caller or Azure template
 
 
 TARGET_LOG_FILE="/home/${AZURE_USER}/bootstrap.log"
