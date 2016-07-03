@@ -50,7 +50,7 @@
 		 "nodeSubnetName" : "[concat (variables('nodeName'), '-subnet') ]",
 		 "nodeIp" : "[concat('11.', variables('adjustedNodeGroupIdx'), '.', variables('adjustedNodeIdx')  ,'.4')]",
 		 "nodeSubnetSpace" : "[concat('11.', variables('adjustedNodeGroupIdx')  , variables('adjustedNodeIdx') , '.0', '/16')]",
-		 "nodeRouteName" : "[concat(variables('nodeName'), '-route'))]",
+		 "nodeRouteName" : "[concat(variables('nodeName'), '-route')]",
 		 "nodeRoutePrefix" : "[concat('11.', variables('adjustedNodeGroupIdx') , '.', variables('adjustedNodeIdx'), '.0', '/8')]"
 	},
 	"resources": [
