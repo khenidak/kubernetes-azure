@@ -83,7 +83,7 @@
 							"privateIPAllocationMethod": "Static",
 							"privateIPAddress": "[variables('nodeIp')]",
 							"subnet": {
-								"id": "[ concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/', variables('nodesSubnetName') )  ]"
+								"id": "[ concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/', variables('nodeSubnetName') )  ]"
 							},
 							"loadBalancerBackendAddressPools": []
 						}
