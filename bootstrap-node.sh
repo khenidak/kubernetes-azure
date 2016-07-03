@@ -1,5 +1,8 @@
 #!/bin/bash
 
+## if you used Ubuntu you can use Azure's Script Extention
+## you will have to make sure that systemd is installed. 
+
 #pre work
 AZURE_USER=$1 #passed by the template
 
