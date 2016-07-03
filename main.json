@@ -189,7 +189,7 @@
 								"protocol": "Tcp",
 								"sourcePortRange": "*",
 								"destinationPortRange": "22",
-								"sourceAddressPrefix": "AZURE_LOADBALANCER",
+								"sourceAddressPrefix": "*",
 								"destinationAddressPrefix": "*",
 								"access": "Allow",
 								"priority": 100,

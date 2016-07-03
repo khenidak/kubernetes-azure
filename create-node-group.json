@@ -50,7 +50,7 @@
 										"protocol": "Tcp",
 										"sourcePortRange": "*",
 										"destinationPortRange": "*",
-										"sourceAddressPrefix": "VIRTUAL_NETWORK",
+										"sourceAddressPrefix": "*",
 										"destinationAddressPrefix": "*",
 										"access": "Allow",
 										"priority": 100,
