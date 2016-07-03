@@ -24,7 +24,9 @@
 		"nodeIndex" : {"type": "int"},
 
 		"nodesGroupAvSetName" : {"type" : "string"},
-		"nodesSubNetName" : {"type" : "string"}
+		"routingTableNameMain" : {"type" : "string"},
+		"nodeGroupNsgName" : {"type" : "string"}
+
 	},
 	"variables": {
 		"CoreOs-Stable": {
@@ -39,21 +41,39 @@
 			"sku": "beta",
 			"version": "latest"
 		},
+		 "adjustedNodeGroupIdx" : "[add(parameters('nodeGroupIndex'), 1)]",
+		 "adjustedNodeIdx" : "[add(parameters('nodeIndex'), 1)]",
 		 "imageReference": "[variables(parameters('coreOSType'))]",
 		 "nodeSeq" : "[concat( parameters('nodeGroupIndex') , '-', parameters('nodeIndex') )]",
 		 "nodeTargetSAPostfix" : "[mod( parameters('nodeIndex') , parameters('nodesSACount') )]",
 		 "nodeName" : "[concat('node-',  variables('nodeSeq'))]",
-		 "nodeIp" : "[concat('11.', add(parameters('nodeGroupIndex'), 1), '.', add(parameters('nodeIndex'), 1)  ,'.0')]",
-		 "nodeRoutePrefix" : "[concat('11.', add(parameters('nodeGroupIndex'), 3) , '.', add(parameters('nodeIndex'), 2), '.0', '/24')]"
+		 "nodeSubnetName" : "[concat (variables('nodeName'), '-subnet') ]",
+		 "nodeIp" : "[concat('11.', variables('adjustedNodeGroupIdx'), '.', variables('adjustedNodeIdx')  ,'.4')]",
+		 "nodeSubnetSpace" : "[concat('11.', variables('adjustedNodeGroupIdx')  , variables('adjustedNodeIdx') , '.0', '/16')]",
+		 "nodeRouteName" : "[concat(variables('nodeName', '-route'))]",
+		 "nodeRoutePrefix" : "[concat('11.', variables('adjustedNodeGroupIdx') , '.', variables('adjustedNodeIdx'), '.0', '/8')]"
 	},
 	"resources": [
+		{
+			"comments" : "node sub net",
+			"apiVersion": "[parameters('networkApiVersion')]",
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+      		"name": "[concat(parameters('clusterVnetName'), '/',  variables('nodeSubnetName'))]",		
+      		"location": "[resourceGroup().location]",
+      		"properties": {
+				  	"addressPrefix": "[variables('nodeSubnetSpace')]",
+					"routeTable": { "id": "[resourceId('Microsoft.Network/routeTables/',  parameters('routingTableNameMain'))]"},
+					"networkSecurityGroup": {"id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nodeGroupNsgName'))]"}
+
+					}
+    	},
 		{
 			"comments" : "create a new nic for this node",
 			"type": "Microsoft.Network/networkInterfaces",
 			"name": "[concat('node-nic-', variables('nodeSeq'))]",
 			"apiVersion": "[parameters('networkApiVersion')]",
 			"location": "[resourceGroup().location]",
-			"dependsOn": [],
+			"dependsOn": ["[concat( Microsoft.Network/virtualNetworks/', parameters('clusterVnetName') ,'/subnets/', variables('nodeSubnetName') )]"],
 			"properties": {
 				"enableIPForwarding": true,
 				"ipConfigurations": [
@@ -63,7 +83,7 @@
 							"privateIPAllocationMethod": "Static",
 							"privateIPAddress": "[variables('nodeIp')]",
 							"subnet": {
-								"id": "[ concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/', parameters('nodesSubNetName') )  ]"
+								"id": "[ concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/', variables('nodesSubnetName') )  ]"
 							},
 							"loadBalancerBackendAddressPools": []
 						}
@@ -117,7 +137,20 @@
 						]
 				}
 			}
-		}
-	
+		},
+		{
+      		"type": "Microsoft.Network/routeTables/routes",
+      		"apiVersion": "[variables('networkApiVersion')]",
+      		"name": "[concat(variables('routingTableNameMain') ,'/', variables('nodeRouteName'))]",
+      		"location": "[resourceGroup().location]",
+      		"dependsOn": [
+       			 "[concat('Microsoft.Compute/virtualMachines/', variables('nodeName'))]"
+     		 ],
+      		"properties": {
+        			"addressPrefix": "[variables('nodeRoutePrefix')]",
+        			"nextHopType": "VirtualAppliance",
+        			"nextHopIpAddress": "[variables('nodeIp')]"
+      			}
+    		}
 	]
 }

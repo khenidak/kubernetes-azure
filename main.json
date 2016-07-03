@@ -109,9 +109,6 @@
 		"templateCreateMasters": "create-masters.json",
 		"templateCreateNodeGroup": "create-node-group.json",
 		"templateCreateNode" : "create-node.json",
-		"templateCreateNodeGroupSpecial": "create-node-group-special.json",
-		"templateCreateNodeSpecial" : "create-node-special.json",
-		"masterbootstrapScript" : "bootstrap-master.sh",
 		
 
 
@@ -123,13 +120,14 @@
 		"nodesStorageAccountprefix": "[ concat(variables('constAddonNodeStorageAccountPrefix') ,   variables('clusterNameClean') ) ]",
 		"nodesSALoop": "nodeSALoop",
 		"clusterVNETName": "[concat(  variables('clusterNameClean') , '-vnet')]",
+		"routingTableNameMain" : "concat(variables('clusterNameClean'), 'rTable')",
 		"mastersSubnetName": "masters-net",
+		"masetersNsgName" : "masters-nsg",
 		"NodesSubnetName": "nodes-net",
 		"NodesSubnetSpace": "11.0.0.0/8",
 		"clusterVnetSpaceMain": "10.0.0.0/8",
 		"clusterVnetSpaceNodes": "11.0.0.0/8",
 		"mastersSubnetSpace": "10.0.0.0/24",
-		"VNETRoutingTableName": "[concat(variables('clusterNameClean'), '-routing-table' )]",
 		"clusterPipName": "[concat(parameters('clusterName'), '-pip' )]",
 		"clusterLBName": "[concat(parameters('clusterName'), '-lb' )]",
 		"clusterLBNameMaster": "[concat(variables('clusterLBName'), '-masters' )]",
@@ -170,11 +168,61 @@
 			}
 		},
 		{
+			"comments" :"Main routing table, used by all subnets",
+      		"type": "Microsoft.Network/routeTables",
+      		"apiVersion": "[variables('networkApiVersion')]",
+      		"name": "[variables('routingTableNameMain')]",
+      		"location": "[resourceGroup().location]"   
+    	},
+		{
+			"comments" : "Masters subnet nsg",
+			"apiVersion": "[variables('networkApiVersion')]",
+  			"type": "Microsoft.Network/networkSecurityGroups",
+  			"name": "[parameters('masetersNsgName')]",
+  			"location": "[resourceGroup().location]",
+  			"properties": {
+    			"securityRules": [
+      					{
+        					"name": "ssh-rule",
+        					"properties": {
+								"description": "Allow ssh",
+								"protocol": "Tcp",
+								"sourcePortRange": "*",
+								"destinationPortRange": "22",
+								"sourceAddressPrefix": "AZURE_LOADBALANCER",
+								"destinationAddressPrefix": "*",
+								"access": "Allow",
+								"priority": 100,
+								"direction": "Inbound"
+        				}
+      				},
+      				{
+        				"name": "allow-nodes-on-kubernetes-api-server",
+        				"properties": {
+								"description": "Allow nodes traffic",
+								"protocol": "Tcp",
+								"sourcePortRange": "*",
+								"destinationPortRange": "8080",
+								"sourceAddressPrefix": "[variables('NodesSubnetSpace')]",
+								"destinationAddressPrefix": "*",
+								"access": "Allow",
+								"priority": 101,
+								"direction": "Inbound"
+        					}
+      				}
+    			]
+  			}
+		},
+		{
 			"comments": "Cluster vnet",
 			"type": "Microsoft.Network/virtualNetworks",
 			"name": "[variables('clusterVNETName')]",
 			"location": "[resourceGroup().location]",
 			"apiVersion": "[variables('networkApiVersion')]",
+			"dependsOn" : [
+							"[concat ('Microsoft.Network/routeTables/', variables('routingTableNameMain') )]",
+							"[concat ('Microsoft.Network/networkSecurityGroups/', variables('masetersNsgName'))]"
+						  ],
 			"properties": {
 				"addressSpace": {
 					"addressPrefixes": ["[variables('clusterVnetSpaceMain')]","[variables('clusterVnetSpaceNodes')]" ]
@@ -183,16 +231,11 @@
 					{
 						"name": "[variables('mastersSubnetName') ]",
 						"properties": {
-								"addressPrefix": "[variables('mastersSubnetSpace')]"
-							}
-					},
-					{
-						"name": "[variables('NodesSubnetName') ]",
-						"properties": {
-								"addressPrefix": "[variables('NodesSubnetSpace')]"
+								"addressPrefix": "[variables('mastersSubnetSpace')]",
+								"routeTable": { "id": "[resourceId('Microsoft.Network/routeTables/',  variables('routingTableNameMain'))]"},
+								"networkSecurityGroup": {"id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('masetersNsgName'))]"}
 							}
 					}
-
 				]
 			}
 			
@@ -377,7 +420,7 @@
 					"adminUsername": {"value": "[parameters('adminUsername')]"},
 					"nodesVMSku": {"value": "[parameters('nodesVMSku')]"},
 					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
-					"nodesSubNetName" : {"value" : "[variables('NodesSubnetName')]"}
+					"routingTableNameMain" : {"value" : "[variables('routingTableNameMain')]"}
 				}
 			}
 		}

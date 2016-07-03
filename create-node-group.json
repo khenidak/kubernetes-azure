@@ -26,15 +26,40 @@
 		"coreOSType": {"type": "string"},
 		
 		"nodeGroupIndex" : {"type": "int"},
-		"nodesSubNetName" : {"type" : "string"}
+		"routingTableNameMain" : {"type" : "string"}
 
 	},
 	"variables": {
 		"nodesGroupAvSetName": "[concat('nodes-avset-',parameters('nodeGroupIndex'))]",
-		"nodegroupSubnetName" : "[concat('net-node-group-',  parameters('nodeGroupIndex'))]"
+		"nodeGroupNsgName" : "[concat('nsg-node-group-',  parameters('nodeGroupIndex'))]"
 
 	},
 	"resources": [
+		{
+					"comments" : "node group  nsg - assigned to all nodes subnets",
+					"apiVersion": "[parameters('networkApiVersion')]",
+					"type": "Microsoft.Network/networkSecurityGroups",
+					"name": "[variables('nodeGroupNsgName')]",
+					"location": "[resourceGroup().location]",
+					"properties": {
+						"securityRules": [
+								{
+									"name": "[concat( variables('nodeGroupNsgName'), 'allow-vnet-all'  )]",
+									"properties": {
+										"description": "Allow traffic from/to vnet",
+										"protocol": "Tcp",
+										"sourcePortRange": "*",
+										"destinationPortRange": "*",
+										"sourceAddressPrefix": "VIRTUAL_NETWORK",
+										"destinationAddressPrefix": "*",
+										"access": "Allow",
+										"priority": 100,
+										"direction": "Inbound"
+								}
+      				}
+    			]
+  			}
+		},
 		{
 			"comments": "Node Availability Set",
 			"type": "Microsoft.Compute/availabilitySets",
@@ -56,8 +81,9 @@
 				"count": "[parameters('nodesPerGroupCount')]"
 			},
 			"dependsOn": [
-				"[concat('Microsoft.Compute/availabilitySets/', variables('nodesGroupAvSetName'))]"
-					],
+							"[concat('Microsoft.Compute/availabilitySets/', variables('nodesGroupAvSetName'))]",
+							"[concat('Microsoft.Network/networkSecurityGroups/', variables('nodeGroupNsgName'))]"
+						],
 			"properties": {
 				"mode": "incremental",
 				"templateLink": {
@@ -84,9 +110,8 @@
 					"nodesVMSku": {"value": "[parameters('nodesVMSku')]"},
 					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
 					"nodesGroupAvSetName" : {"value" : "[variables('nodesGroupAvSetName')]"},
-
-					"nodesSubNetName" : {"value" : "[parameters('nodesSubNetName')]"}
-
+					"routingTableNameMain" : {"value" : "[parameters('routingTableNameMain')]"},
+					"nodeGroupNsgName" : {"value" : "[variables('nodeGroupNsgName')]"}
 				}
 			}
 		}
