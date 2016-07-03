@@ -178,7 +178,7 @@
 			"comments" : "Masters subnet nsg",
 			"apiVersion": "[variables('networkApiVersion')]",
   			"type": "Microsoft.Network/networkSecurityGroups",
-  			"name": "[parameters('masetersNsgName')]",
+  			"name": "[variables('masetersNsgName')]",
   			"location": "[resourceGroup().location]",
   			"properties": {
     			"securityRules": [
