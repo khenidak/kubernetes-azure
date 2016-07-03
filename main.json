@@ -370,8 +370,7 @@
 					"mastersVMSku": {"value": "[parameters('mastersVMSku')]"},
 					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
 					"clusterLBName" : {"value" : "[variables('clusterLBName')]"},
-					"baseTemplatesUri" : {"value": "[variables('baseTemplatesUri')]" },
-					"masterbootstrapScript" : {"value": "[variables('masterbootstrapScript')]" }
+					"baseTemplatesUri" : {"value": "[variables('baseTemplatesUri')]" }
 	
 				}
 			}

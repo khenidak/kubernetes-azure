@@ -19,8 +19,7 @@
 		"mastersVMSku": {"type": "string"},
 		"coreOSType": {"type": "string"},
 		"clusterLBName" : {"type" : "string"},
-		"baseTemplatesUri" : {"type": "string" },
-		"masterbootstrapScript" : {"type": "string" }
+		"baseTemplatesUri" : {"type": "string" }
 	},
 	"variables": {
 		"mastersAvSetName": "masters-avset",
