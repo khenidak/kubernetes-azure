@@ -41,8 +41,8 @@
 			"sku": "beta",
 			"version": "latest"
 		},
-		 "adjustedNodeGroupIdx" : "[add(parameters('nodeGroupIndex'), 1)]",
-		 "adjustedNodeIdx" : "[add(parameters('nodeIndex'), 1)]",
+		 "adjustedNodeGroupIdx" : "[parameters('nodeGroupIndex')]",
+		 "adjustedNodeIdx" : "[parameters('nodeIndex')]",
 		 "imageReference": "[variables(parameters('coreOSType'))]",
 		 "nodeSeq" : "[concat( parameters('nodeGroupIndex') , '-', parameters('nodeIndex') )]",
 		 "nodeTargetSAPostfix" : "[mod( parameters('nodeIndex') , parameters('nodesSACount') )]",

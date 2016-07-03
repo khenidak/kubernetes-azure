@@ -16,11 +16,11 @@ exec 2>&1
 
 cd /home/${AZURE_USER}
 
-
+THIS_NODE_NAME=$(hostname)  
 THIS_NODE_IP=$(ifconfig eth0 | grep 'inet' | cut -d: -f2 | awk '{print $2}') 					
 THREE_SEGS=$(echo ${THIS_NODE_IP} | awk -F "." '{printf "%s.%s.%s.", $1, $2, $3}') 
+NODE_GROUPLABEL=$(echo ${THIS_NODE_IP} | awk -F "." '{printf "%s",  $2}')
 CBR0_IP="${THREE_SEGS}128/25"
-
 
 
 
@@ -140,8 +140,9 @@ sudo systemctl start kube-proxy.service
 echo "+ started kubernetes proxy"
 
 
-#TODO: Add symbolic link 
-#TODO: Add node group as a node label on the current node
-
+#add node group label to current node
+cd /home/${AZURE_USER}/
+echo "Node Labeling: ${THIS_NODE_NAME}  with nodegoup=${NODE_GROUPLABEL}"
+./kubernetes/cluster/kubectl.sh label nodes ${THIS_NODE_NAME} nodegoup=${NODE_GROUPLABEL} --server=http://10.0.0.4:8080
 
 echo "+ Done!"

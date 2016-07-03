@@ -18,7 +18,6 @@ COUNTER=0
 while [  $COUNTER -lt $masters_count ]; do
 	thisport="500${COUNTER}"
 
- 
 	echo "+ Performing Master Configuration on: ${thishost} on Port ${thisport} logs @ ~./bootstrap.log"
     scp -o "StrictHostKeyChecking no"  -i ${key_file} -P ${thisport}  ./bootstrap-master.sh ${azure_user_name}@${thishost}:~/ 
 
@@ -70,7 +69,7 @@ while [  $groupcounter -lt $node_group_count ]; do
 		echo "++ Executing Node-Bootstrap On: ${thisnodeaddress}"
 		#execute it
 		ssh -o "StrictHostKeyChecking no"  ${azure_user_name}@${thishost} -p ${thisport} -i ${key_file} \
-		"ssh -o 'StrictHostKeyChecking no'  -i ./vmkey  ${azure_user_name}@${thisnodeaddress} \" sudo systemd-run ./bootstrap-node.sh  ${azure_user_name} \" "   
+		"ssh -o 'StrictHostKeyChecking no'  -i ./vmkey  ${azure_user_name}@${thisnodeaddress} \" sudo systemd-run --uid=${azure_user_name} ./bootstrap-node.sh  ${azure_user_name} \" "   
 
     
 
