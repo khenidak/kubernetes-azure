@@ -5,16 +5,16 @@
 # 2: starts kubelet pointing to 10.0.0.4 (Azure internal load balancer infront of masters)
 # 3: starts kube-proxy point to 10.0.0.4 as well
 # 4: assigns a kubernetes label to current node = node group sequence 
-# nodes are expected to follow an ip scheme 11.<node-group>.<node seq starting at 0>.4 (refer to readme.md file for more) 
+# nodes are expected to follow an ip scheme 11.<node-group>.<node seq starting at 0>.4 (refer to readme.md file for why, how & more) 
 # all configuration is done via systemd units.
 
 # You can run this script via Azure custom script extentions on systemd + docker enabled hosts
-  
+# or: Run it using a management software such as puppet 
 
 
 
 #pre work
-AZURE_USER=$1 #passed by the template
+AZURE_USER=$1 #passed by the caller or Azure template
 
 
 TARGET_LOG_FILE="/home/${AZURE_USER}/bootstrap.log"

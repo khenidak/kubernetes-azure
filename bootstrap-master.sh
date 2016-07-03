@@ -6,7 +6,7 @@
 # all configuration is done via systemd units.
 
 # You can run this script via Azure custom script extentions on systemd + docker enabled hosts
-  
+# or: Run it using a management software such as puppet   
 
 #pre work
 AZURE_USER=$1 #passed by the caller or Azure template
