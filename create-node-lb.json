@@ -1,0 +1,164 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"computeApiVersion": {"type": "string"},
+		"networkApiVersion": {"type": "string"},
+		"storageApiVersion": {"type": "string"},
+		"clusterName": {"type": "string"},
+		"clusterNameClean": {"type": "string"},
+		"clusterVNETName": {"type": "string"},
+		
+		"nodesSACount": {"type": "int"},
+		"nodesPerGroupCount": {"type": "int"},
+		"nodesStorageAccountprefix": {"type": "string" },
+		
+
+		"sshKeyPath": {"type": "string"},
+		"sshKeyData": {"type": "string"},
+		"adminUsername": {"type": "string"},
+		"nodesVMSku": {"type": "string"},
+		"coreOSType": {"type": "string"},
+		
+		"nodeGroupIndex" : {"type": "int"},
+		"nodeIndex" : {"type": "int"},
+
+		"nodesGroupAvSetName" : {"type" : "string"},
+		"routingTableNameMain" : {"type" : "string"},
+		"nodeGroupNsgName" : {"type" : "string"},
+		"nodeGroupLBName" : {"type" : "string"}
+
+	},
+	"variables": {
+		"CoreOs-Stable": {
+			"publisher": "CoreOs",
+			"offer": "CoreOs",
+			"sku": "Stable",
+			"version": "latest"
+		},
+		"CoreOs-Beta": {
+			"publisher": "CoreOS",
+			"offer": "CoreOs",
+			"sku": "beta",
+			"version": "latest"
+		},
+		 "adjustedNodeGroupIdx" : "[parameters('nodeGroupIndex')]",
+		 "adjustedNodeIdx" : "[parameters('nodeIndex')]",
+		 "imageReference": "[variables(parameters('coreOSType'))]",
+		 "nodeSeq" : "[concat( parameters('nodeGroupIndex') , '-', parameters('nodeIndex') )]",
+		 "nodeTargetSAPostfix" : "[mod( parameters('nodeIndex') , parameters('nodesSACount') )]",
+		 "nodeName" : "[concat('node-',  variables('nodeSeq'))]",
+		 "nodeSubnetName" : "[concat (variables('nodeName'), '-subnet') ]",
+		 "nodeIp" : "[concat('11.', variables('adjustedNodeGroupIdx'), '.', variables('adjustedNodeIdx')  ,'.4')]",
+		 "nodeSubnetSpace" : "[concat('11.', variables('adjustedNodeGroupIdx'), '.'  , variables('adjustedNodeIdx') , '.0', '/24')]",
+		 "nodeRouteName" : "[concat(variables('nodeName'), '-route')]",
+		 "nodeRoutePrefix" : "[concat('11.', variables('adjustedNodeGroupIdx') , '.', variables('adjustedNodeIdx'), '.0', '/24')]"
+	},
+	"resources": [
+		{
+			"comments" : "node sub net",
+			"apiVersion": "[parameters('networkApiVersion')]",
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+      		"name": "[concat(parameters('clusterVnetName'), '/',  variables('nodeSubnetName'))]",		
+      		"location": "[resourceGroup().location]",
+      		"properties": {
+				  	"addressPrefix": "[variables('nodeSubnetSpace')]",
+					"routeTable": { "id": "[resourceId('Microsoft.Network/routeTables/',  parameters('routingTableNameMain'))]"},
+					"networkSecurityGroup": {"id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nodeGroupNsgName'))]"}
+
+					}
+    	},
+		{ 
+			"comments" : "create a new nic for this node / placed in lb backend address pool",
+			"type": "Microsoft.Network/networkInterfaces",
+			"name": "[concat('node-nic-', variables('nodeSeq'))]",
+			"apiVersion": "[parameters('networkApiVersion')]",
+			"location": "[resourceGroup().location]",
+			"dependsOn": [
+							"[concat( 'Microsoft.Network/virtualNetworks/', parameters('clusterVnetName') ,'/subnets/', variables('nodeSubnetName') )]"
+						],
+			"properties": {
+				"enableIPForwarding": true,
+				"ipConfigurations": [
+					{
+						"name": "node-ip-config",
+						"properties": {
+							"privateIPAllocationMethod": "Static",
+							"privateIPAddress": "[variables('nodeIp')]",
+							"subnet": {
+								"id": "[ concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/', variables('nodeSubnetName') )  ]"
+							},
+							"loadBalancerBackendAddressPools": [
+								{
+									"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', parameters('nodeGroupLBName'), '/backendAddressPools/', 'nodesPool')]"
+								}
+
+							]
+						}
+					}
+				]
+			}
+		},
+		{
+			"comments": "Cluster node vm",
+			"type": "Microsoft.Compute/virtualMachines",
+			"name": "[variables('nodeName')]",
+			"apiVersion": "[parameters('computeApiVersion')]",
+			"location": "[resourceGroup().location]",
+			"dependsOn": ["[concat('Microsoft.Network/networkInterfaces/' , 'node-nic-', variables('nodeSeq') )]"],
+			"properties": {
+				"availabilitySet": { 
+						"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Compute/availabilitySets/', parameters('nodesGroupAvSetName')  )]"
+						},
+				"hardwareProfile": {"vmSize": "[parameters('nodesVMSku')]"},
+				"osProfile": {
+					"computerName": "[concat('node-', variables('nodeSeq'))]",
+					"adminUsername": "[parameters('adminUsername')]",
+					"linuxConfiguration": {
+						"disablePasswordAuthentication": "true",
+						"ssh": {
+							"publicKeys": [
+								{
+									"path": "[parameters('sshKeyPath')]",
+									"keyData": "[parameters('sshKeyData')]"
+								}
+							]
+						}
+					}
+				},
+				"storageProfile": {
+					"imageReference": "[variables('imageReference')]",
+					"osDisk": {
+						"name": "osdisk",
+						"vhd": {
+							"uri": "[concat('https://',  parameters('nodesStorageAccountprefix'), variables('nodeTargetSAPostfix'), '.blob.core.windows.net/', variables('nodeSeq') , '/', 'node-OsDisk.vhd')]"
+						},
+						"caching": "ReadWrite",
+						"createOption": "FromImage"
+					}
+				},
+				"networkProfile": {
+					"networkInterfaces": [ 
+							{
+							"id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/networkInterfaces/', concat('node-nic-', variables('nodeSeq')) )]"
+							}
+						]
+				}
+			}
+		},
+		{
+      		"type": "Microsoft.Network/routeTables/routes",
+      		"apiVersion": "[parameters('networkApiVersion')]",
+      		"name": "[concat(parameters('routingTableNameMain') ,'/', variables('nodeRouteName'))]",
+      		"location": "[resourceGroup().location]",
+      		"dependsOn": [
+       			 "[concat('Microsoft.Compute/virtualMachines/', variables('nodeName'))]"
+     		 ],
+      		"properties": {
+        			"addressPrefix": "[variables('nodeRoutePrefix')]",
+        			"nextHopType": "VirtualAppliance",
+        			"nextHopIpAddress": "[variables('nodeIp')]"
+      			}
+    		}
+	]
+}

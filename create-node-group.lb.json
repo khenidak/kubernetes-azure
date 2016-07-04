@@ -1,0 +1,153 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"computeApiVersion": {"type": "string"},
+		"networkApiVersion": {"type": "string"},
+		"storageApiVersion": {"type": "string"},
+		"resourceApiVersion": {"type" : "string"},
+
+		"clusterName": {"type": "string"},
+		"clusterNameClean": {"type": "string"},
+		"clusterVNETName": {"type": "string"},
+		
+		"nodesSACount": {"type": "int"},
+		"nodesPerGroupCount": {"type": "int"},
+		"nodesStorageAccountprefix": {"type": "string" },
+		
+
+		"baseTemplatesUri" : {"type": "string" },
+		 "templateCreateNode" : {"type": "string" },
+
+		"sshKeyPath": {"type": "string"},
+		"sshKeyData": {"type": "string"},
+		"adminUsername": {"type": "string"},
+		"nodesVMSku": {"type": "string"},
+		"coreOSType": {"type": "string"},
+		
+		"nodeGroupIndex" : {"type": "int"},
+		"routingTableNameMain" : {"type" : "string"},
+
+		"groupDnsLabel" : {"type" : "string"}
+	},
+	"variables": {
+		"nodesGroupAvSetName": "[concat('nodes-avset-',parameters('nodeGroupIndex'))]",
+		"nodeGroupNsgName" : "[concat('nsg-node-group-',  parameters('nodeGroupIndex'))]",
+		"nodeGroupPIPName" : "[concat('group-pip-', parameters('nodeGroupIndex'))]",
+		"nodeGroupLBName" : "[concat('group-lb-', parameters('nodeGroupIndex'))]"
+	},
+	"resources": [
+		{
+			"comments": "public ip group lb",
+			"type": "Microsoft.Network/publicIPAddresses",
+			"name": "[variables('nodeGroupPIPName')]",
+			"location": "[resourceGroup().location]",
+			"apiVersion": "[parameters('networkApiVersion')]",
+			"properties": {
+				"publicIPAllocationMethod": "Dynamic",
+				"dnsSettings": {"domainNameLabel": "[parameters('groupDnsLabel')]"}
+			}
+		},
+		{
+			"comments": "node group edge loadbalancer",
+			"type": "Microsoft.Network/loadBalancers",
+			"name": "[variables('nodeGroupLBName')]",
+			"location": "[resourceGroup().location]",
+			"apiVersion": "[parameters('networkApiVersion')]",
+			"dependsOn": ["[concat('Microsoft.Network/publicIPAddresses/', variables('nodeGroupPIPName'))]"],
+			"properties": {
+				"frontendIPConfigurations": [
+					{
+						"name": "LoadBalancerFrontEnd",
+						"properties": {"publicIPAddress": {"id": "[resourceId('Microsoft.Network/publicIPAddresses/',  variables('clusterPipName'))]"}}
+					}
+				],
+				"backendAddressPools": [ {"name" : "nodesPool"}]
+			}
+		},
+		{
+			"comments" : "node group  nsg - assigned to all nodes subnets",
+			"apiVersion": "[parameters('networkApiVersion')]",
+			"type": "Microsoft.Network/networkSecurityGroups",
+			"name": "[variables('nodeGroupNsgName')]",
+			"dependsOn": ["[concat('Microsoft.Network/loadBalancers/', variables('nodeGroupLBName'))]"],
+			"location": "[resourceGroup().location]",
+			"properties": {
+			"securityRules": [
+							{
+								"name": "[concat( variables('nodeGroupNsgName'), 'allow-vnet-all'  )]",
+								"properties": {
+									"description": "Allow traffic from/to vnet",
+									"protocol": "Tcp",
+									"sourcePortRange": "*",
+									"destinationPortRange": "*",
+									"sourceAddressPrefix": "*",
+									"destinationAddressPrefix": "*",
+									"access": "Allow",
+									"priority": 100,
+									"direction": "Inbound"
+							}
+      				}
+    			]
+  			}
+		},
+		{
+			"comments": "Node Availability Set",
+			"type": "Microsoft.Compute/availabilitySets",
+			"name": "[variables('nodesGroupAvSetName')]",
+			"apiVersion": "[parameters('computeApiVersion')]",
+			"location": "[resourceGroup().location]",
+			"properties": {
+				"platformFaultDomainCount": "3",
+				"platformUpdateDomainCount": "5"
+			}
+		},
+		{
+			"comments": "Creates nodes",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "[parameters('resourceApiVersion')]",
+			"name": "[concat('create-node-', parameters('nodeGroupIndex') ,'-',copyIndex())]",
+			"copy": {
+				"name": "nodeLoop",
+				"count": "[parameters('nodesPerGroupCount')]"
+			},
+			"dependsOn": [
+							"[concat('Microsoft.Compute/availabilitySets/', variables('nodesGroupAvSetName'))]",
+							"[concat('Microsoft.Network/networkSecurityGroups/', variables('nodeGroupNsgName'))]"
+						],
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('baseTemplatesUri'), parameters('templateCreateNode'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"computeApiVersion": {"value": "[parameters('computeApiVersion')]"},
+					"networkApiVersion": {"value": "[parameters('networkApiVersion')]"},
+					"storageApiVersion": {"value": "[parameters('storageApiVersion')]"},
+					"clusterName": {"value": "[parameters('clusterName')]"},
+					"clusterNameClean": {"value": "[parameters('clusterNameClean')]"},
+					"clusterVNETName": {"value": "[parameters('clusterVNETName')]"},
+					"nodesStorageAccountprefix": {"value": "[parameters('nodesStorageAccountprefix')]"},
+
+					"nodesPerGroupCount": {"value": "[parameters('nodesPerGroupCount')]"},
+					"nodeGroupIndex" : {"value": "[parameters('nodeGroupIndex')]"},
+				    "nodesSACount":  {"value": "[parameters('nodesSACount')]"},
+					"nodeIndex" : {"value" : "[copyIndex()]"},
+	
+					"sshKeyPath": {"value": "[parameters('sshKeyPath')]"},
+					"sshKeyData": {"value": "[parameters('sshKeyData')]"},
+					"adminUsername": {"value": "[parameters('adminUsername')]"},
+					"nodesVMSku": {"value": "[parameters('nodesVMSku')]"},
+					"coreOSType" : {"value" : "[parameters('coreOSType')]"},
+					"nodesGroupAvSetName" : {"value" : "[variables('nodesGroupAvSetName')]"},
+					"routingTableNameMain" : {"value" : "[parameters('routingTableNameMain')]"},
+					"nodeGroupNsgName" : {"value" : "[variables('nodeGroupNsgName')]"},
+
+					"nodeGroupLBName" : {"value" : "[variables('nodeGroupLBName')]"}
+
+				}
+			}
+		}
+	]
+}

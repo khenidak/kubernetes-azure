@@ -8,15 +8,19 @@
 location="westus" # Resorce group location
 dns_label="my-kub-cluster03" # DNS label for cluster
 key_file="./keys/vmkey" # location for ssh key file
+config_masters="no"
 azure_user_name="azureuser" # user name to connect to the cluster
+
 masters_count="5" # number of masters in this cluster  
 
-#assuming you are always configure the last added node group or nodes
-node_group_start_idx=0
-node_in_group_start_idx=0
 
-node_group_count=1
-nodes_per_group=2
+
+#assuming you are always configure the last added node group or nodes
+node_group_start_idx=1
+node_in_group_start_idx=2
+
+node_group_count=2
+nodes_per_group=3
 
 
 
@@ -26,21 +30,26 @@ nodes_per_group=2
 thishost="${dns_label}.${location}.cloudapp.azure.com"
 COUNTER=0
 
-while [  $COUNTER -lt $masters_count ]; do
-	thisport="500${COUNTER}"
+if [ "$config_masters" == "yes" ]
+ then
 
-	echo "+ Performing Master Configuration on: ${thishost} on Port ${thisport} logs @ ~./bootstrap.log"
-    scp -o "StrictHostKeyChecking no"  -i ${key_file} -P ${thisport}  ./bootstrap-master.sh ${azure_user_name}@${thishost}:~/ 
+	while [  $COUNTER -lt $masters_count ]; do
+		thisport="500${COUNTER}"
 
-	echo "++ Executing Master-Bootstrap on: ${thishost} on Port ${thisport} logs @ ~./bootstrap.log"
-    
-	ssh -o "StrictHostKeyChecking no"  ${azure_user_name}@${thishost} -p ${thisport} -i ${key_file}  "chmod +x ./bootstrap-master.sh;  ./bootstrap-master.sh ${azure_user_name}  "
+		echo "+ Performing Master Configuration on: ${thishost} on Port ${thisport} logs will be saved in /home/${azure_user_name}/bootstrap.log"
+		
+		scp -o "StrictHostKeyChecking no"  -i ${key_file} -P ${thisport}  ./bootstrap-master.sh ${azure_user_name}@${thishost}:~/ 
 
-    COUNTER=`expr $COUNTER + 1` 
-done
+		echo "++ Executing Master-Bootstrap on: ${thishost} on Port ${thisport} logs @ ~./bootstrap.log"
+		
+		ssh -o "StrictHostKeyChecking no"  ${azure_user_name}@${thishost} -p ${thisport} -i ${key_file}  "chmod +x ./bootstrap-master.sh;  ./bootstrap-master.sh ${azure_user_name}  "
+		
+		COUNTER=`expr $COUNTER + 1` 
+	done
 
-echo "+ Configuration on Masters completed, log files on each node at /home/${azure_user_name}/bootstrap.log"
-echo "+ Configuring nodes via master-0"
+	echo "+ Configuration on Masters completed, log file will be saved on each node in /home/${azure_user_name}/bootstrap.log"
+	echo "+ Configuring nodes via master-0"
+fi
 
 #reset
 
@@ -102,8 +111,6 @@ done
 
 
 
-echo "+ Removing keys from the master"
-
-
+#echo "+ Removing keys from the master"
 # ssh -o "StrictHostKeyChecking no"  ${azure_user_name}@${thishost} -p ${thisport} -i ${key_file}  "rm ./vmkey"
 

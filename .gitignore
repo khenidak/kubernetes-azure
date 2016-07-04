@@ -1,5 +1,11 @@
 # Parameter File
+
 parameters.json
+parameters.create-node-group.json
+parameters.create-node.json
+
+parameters.create-node-group-lb.json
+
 
 .vscode
 
