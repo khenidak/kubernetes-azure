@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app02-web-fe-svc
+  labels:
+    app: app02-web
+spec:
+  type: NodePort # type of services, this tells kube-proxy to listen on each node for ports below
+  ports:
+  - port: 80 # port exposed as a service, this is used by other pods or any node running kube-proxy will 
+    nodePort: 30081 # port exposed by Kube-Proxy on each node (azure load balancer route directly to this port, only nodes backend pool)
+    targetPort: 80 # Port exposed by container
+    protocol: TCP
+    name: http
+  selector:
+    app: app01-web
+
+
+    # pods exposed by this service are now accessible via azure loadbalancer (internal or external) ip/dns lable:<node port> given that 
+    # 1: a prope has been configured 
+    # 2: load balancing rule.
+
+    # Option options: 
+    # you can use the same model to expose 1 pod via natting.

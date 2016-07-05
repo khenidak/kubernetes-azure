@@ -13,5 +13,4 @@ parameters.create-node-group-ilb.json
 gitsync-and-deploy.sh
 
 keys/
-ingest-via-loadbalancer/
 
