@@ -5,6 +5,7 @@ parameters.create-node-group.json
 parameters.create-node.json
 
 parameters.create-node-group-lb.json
+parameters.create-node-group-ilb.json
 
 
 .vscode
@@ -12,6 +13,5 @@ parameters.create-node-group-lb.json
 gitsync-and-deploy.sh
 
 keys/
+ingest-via-loadbalancer/
 
-
-copy-bootstrapscript-to-master.sh

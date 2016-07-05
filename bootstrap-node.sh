@@ -155,6 +155,6 @@ cd /home/${AZURE_USER}/
 
 sleep 30s # wait until node registers itself, note the node is active once registered
 echo "Node Labeling: ${THIS_NODE_NAME}  with nodegoup=${NODE_GROUPLABEL}"
-./kubernetes/cluster/kubectl.sh label nodes ${THIS_NODE_NAME} nodegoup=${NODE_GROUPLABEL} --server=http://10.0.0.4:8080
+./kubernetes/cluster/kubectl.sh label nodes ${THIS_NODE_NAME} nodegroup=${NODE_GROUPLABEL} --server=http://10.0.0.4:8080
 
 echo "+ Done!"

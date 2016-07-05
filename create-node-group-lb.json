@@ -59,7 +59,7 @@
 				"frontendIPConfigurations": [
 					{
 						"name": "LoadBalancerFrontEnd",
-						"properties": {"publicIPAddress": {"id": "[resourceId('Microsoft.Network/publicIPAddresses/',  variables('clusterPipName'))]"}}
+						"properties": {"publicIPAddress": {"id": "[resourceId('Microsoft.Network/publicIPAddresses/',  variables('nodeGroupPIPName'))]"}}
 					}
 				],
 				"backendAddressPools": [ {"name" : "nodesPool"}]
