@@ -113,7 +113,8 @@
 			},
 			"dependsOn": [
 							"[concat('Microsoft.Compute/availabilitySets/', variables('nodesGroupAvSetName'))]",
-							"[concat('Microsoft.Network/networkSecurityGroups/', variables('nodeGroupNsgName'))]"
+							"[concat('Microsoft.Network/networkSecurityGroups/', variables('nodeGroupNsgName'))]",
+						    "[concat('Microsoft.Network/loadbalancers/',  variables('nodeGroupLBName'))]"
 						],
 			"properties": {
 				"mode": "incremental",

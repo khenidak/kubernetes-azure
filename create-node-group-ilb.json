@@ -26,9 +26,7 @@
 		"coreOSType": {"type": "string"},
 		
 		"nodeGroupIndex" : {"type": "int"},
-		"routingTableNameMain" : {"type" : "string"},
-
-		"groupDnsLabel" : {"type" : "string"}
+		"routingTableNameMain" : {"type" : "string"}
 	},
 	"variables": {
 		"nodesGroupAvSetName": "[concat('nodes-avset-',parameters('nodeGroupIndex'))]",
@@ -43,7 +41,6 @@
 			"apiVersion": "[parameters('networkApiVersion')]",
 			"type": "Microsoft.Network/networkSecurityGroups",
 			"name": "[variables('nodeGroupNsgName')]",
-			"dependsOn": ["[concat('Microsoft.Network/loadBalancers/', variables('nodeGroupLBName'))]"],
 			"location": "[resourceGroup().location]",
 			"properties": {
 			"securityRules": [
@@ -70,7 +67,7 @@
 			"type": "Microsoft.Network/virtualNetworks/subnets",
       		"name": "[concat(parameters('clusterVnetName'), '/',   variables('nodeGroupLBSubnetName') )]",		
       		"location": "[resourceGroup().location]",
-      		"dependsOn" : "[concat('Microsoft.Network/networkSecurityGroups/',  variables('nodeGroupNsgName')  )]",
+      		"dependsOn" : ["[concat('Microsoft.Network/networkSecurityGroups/',  variables('nodeGroupNsgName')  )]"],
 			"properties": {
 				  	"addressPrefix": "[variables('nodeGroupLBSubnetSpace')]",
 					"routeTable": { "id": "[resourceId('Microsoft.Network/routeTables/',  parameters('routingTableNameMain'))]"},
@@ -91,7 +88,7 @@
 						"name": "LoadBalancerFrontend-internal",
 						"properties": {
 							"subnet": {
-								"id": "[  concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', variables('clusterVNETName'), '/subnets/', variables('nodeGroupLBSubnetName')) ]"
+								"id": "[  concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', parameters('clusterVNETName'), '/subnets/', variables('nodeGroupLBSubnetName')) ]"
 							},
 							"privateIPAddress": "[concat ('11.', parameters('nodeGroupIndex'), '.255.4' )]",
 							"privateIPAllocationMethod": "Static"
@@ -123,7 +120,8 @@
 			},
 			"dependsOn": [
 							"[concat('Microsoft.Compute/availabilitySets/', variables('nodesGroupAvSetName'))]",
-							"[concat('Microsoft.Network/networkSecurityGroups/', variables('nodeGroupNsgName'))]"
+							"[concat('Microsoft.Network/networkSecurityGroups/', variables('nodeGroupNsgName'))]",
+							"[concat('Microsoft.Network/loadbalancers/',  variables('nodeGroupLBName'))]"
 						],
 			"properties": {
 				"mode": "incremental",

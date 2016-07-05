@@ -16,10 +16,10 @@ masters_count="5" # number of masters in this cluster
 
 
 #assuming you are always configure the last added node group or nodes
-node_group_start_idx=2
+node_group_start_idx=3
 node_in_group_start_idx=0
 
-node_group_count=3
+node_group_count=4
 nodes_per_group=2
 
 

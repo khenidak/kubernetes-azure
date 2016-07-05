@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script boot strap kubernetes cluster (nodes, not masters) by
+# This script boot strap kubernetes cluster nodes, not masters) by
 # 1: download kubernetes bins
 # 2: starts kubelet pointing to 10.0.0.4 (Azure internal load balancer infront of masters)
 # 3: starts kube-proxy point to 10.0.0.4 as well
@@ -50,32 +50,66 @@ tar -xzvf ./kubernetes/server/kubernetes-server-linux-amd64.tar.gz
 sudo mkdir -p /srv/kubernetes-server/bin
 sudo cp -r ./kubernetes/server/bin/* /srv/kubernetes-server/bin/
 
-echo "+ stop docker, then configure"
+echo "+ stop docker, then configure, via direct script call now, then a systemd call file on restart"
 
 
 
 sudo systemctl stop docker.service
 
-#Disable docker bridge and default iptables config
- sudo iptables -t nat -F
- sudo ifconfig docker0 down
- sudo brctl delbr docker0
+sudo iptables -t nat -F # flash iptables rules/chains in nat tables 
 
+# Create node-startup (creates cbr0 bridge and configure it) 
+sudo touch /home/${AZURE_USER}/node-startup-config.sh
+
+
+
+cat << EOL | sudo tee --append  /home/${AZURE_USER}/node-startup-config.sh
+#!/bin/bash
+#Disable docker bridge and default iptables config
+ if ifconfig |  grep --q docker0; 
+ then 
+ 	sudo ifconfig docker0 down
+ 	sudo brctl delbr docker0
+ fi
  sudo brctl addbr cbr0 # create new bridge
 
 
 sudo ip addr add ${CBR0_IP} dev cbr0 #give it ip within the same subnet as the node. 
 
-
-# mkdir /etc/default/docker #todo check directory 
-sudo touch /etc/default/docker
-echo "DOCKER_OPTS=--bridge=cbr0 --iptables=false   --ip-masq=false" | sudo tee --append /etc/default/docker
-
-
 # turn on masqarading for out going traffic 
 sudo iptables -t nat -A POSTROUTING ! -d 10.0.0.0/8 -m addrtype ! --dst-type LOCAL -j MASQUERADE
 sudo iptables -t nat -A POSTROUTING ! -d 11.0.0.0/8 -m addrtype ! --dst-type LOCAL -j MASQUERADE
 
+EOL
+
+
+
+sudo chmod +x  /home/${AZURE_USER}/node-startup-config.sh
+
+
+
+# configure a startup service to call our script
+sudo touch /etc/systemd/system/node-startup-config.service
+cat << EOL | sudo tee --append /etc/systemd/system/node-startup-config.service
+[Unit]
+Description=node-startup-config
+
+[Service]
+Type=oneshot
+ExecStart=/home/${AZURE_USER}/node-startup-config.sh
+
+[Install]
+WantedBy=multi-user.target
+EOL
+
+sudo systemctl enable node-startup-config.service
+sudo systemctl start node-startup-config.service
+
+
+
+# mkdir /etc/default/docker #todo check directory 
+sudo touch /etc/default/docker
+echo "DOCKER_OPTS=--bridge=cbr0 --iptables=false   --ip-masq=false" | sudo tee --append /etc/default/docker
 
 
 # ** ** ** configure docker to work with modified flags.
@@ -86,6 +120,8 @@ sudo touch /etc/systemd/system/docker.service.d/docker_opts.conf
 
 echo "[Service]" | sudo tee --append /etc/systemd/system/docker.service.d/docker_opts.conf
 echo "EnvironmentFile=-/etc/default/docker" | sudo tee --append /etc/systemd/system/docker.service.d/docker_opts.conf
+echo "After=node-startup-config.service" | sudo tee --append /etc/systemd/system/docker.service.d/docker_opts.conf
+
 
 
 
@@ -158,3 +194,4 @@ echo "Node Labeling: ${THIS_NODE_NAME}  with nodegoup=${NODE_GROUPLABEL}"
 ./kubernetes/cluster/kubectl.sh label nodes ${THIS_NODE_NAME} nodegroup=${NODE_GROUPLABEL} --server=http://10.0.0.4:8080
 
 echo "+ Done!"
+
