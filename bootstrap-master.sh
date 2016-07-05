@@ -90,8 +90,6 @@ After=docker.service
 Requires=docker.service 
 
 [Service] 
-
-TimeoutStartSec=30 
 ExecStartPre=-/usr/bin/docker kill etcd
 ExecStartPre=-/usr/bin/docker rm etcd
 ExecStart=/usr/bin/docker run   -d \
@@ -140,8 +138,6 @@ After=docker.service
 Requires=docker.service 
 
 [Service] 
-
-TimeoutStartSec=30
 ExecStartPre=-/usr/bin/docker kill apiserver
 ExecStartPre=-/usr/bin/docker rm apiserver
 ExecStart=/usr/bin/docker run -d -p 8080:8080 \
@@ -182,8 +178,6 @@ After=docker.service
 Requires=docker.service 
 
 [Service] 
-
-TimeoutStartSec=30
 ExecStartPre=-/usr/bin/docker kill scheduler
 ExecStartPre=-/usr/bin/docker rm scheduler
 ExecStart=/usr/bin/docker run  -d \
@@ -225,8 +219,6 @@ After=docker.service
 Requires=docker.service 
 
 [Service] 
-
-TimeoutStartSec=30
 ExecStartPre=-/usr/bin/docker kill controller-manager
 ExecStartPre=-/usr/bin/docker rm controller-manager
 ExecStart=/usr/bin/docker run  -d   \
