@@ -42,7 +42,7 @@ note: you can modify NSG as needed to accommodate specific network lock down req
 2. Modify configure-cluster (first section, the parameters section) then run it on your local machine.
 
 
-## Create New Node Group Type ## 
+## Create New Node Group Type ##
 For Example: to accommodate specific VM H/W type, OS type or using different storage accounts/storage account types for this node group. 
 
 1. Create a copy of one of the create-node-group-*.json files. 
@@ -55,6 +55,7 @@ For Example: to accommodate specific VM H/W type, OS type or using different sto
 
 # Add New Node Group Set (scale beyond 400 nodes) #
 ![Multiple Node Sets](/docs/img/multiple-node-sets.png)
+
 1. Create a new VNET with at least one address space that is not 11.0.0.0/8 for example choose 12.0.0.0/8.
 2. Ensure that the masters ilb at 10.0.0.4 is route-able to, from the new VNET.
 3. Modify create-node-group*.json files and deploy accordingly.
