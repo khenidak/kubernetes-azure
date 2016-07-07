@@ -38,17 +38,6 @@ The above diagram depicts how a Kubernetes cluster will work on Azure. The follo
 - The address space 10.1.0.0/16 is reserved for Kubernetes services and 10.1.255.255 is reserved for Kubernets DNS (no subnet created for this address space).
 - Traffic can be ingested into the cluster via external load balancers, internal load balancers or reverse proxies such as nginx or Azure App Gateway.
 
-**The repo contain the following node group types:**
-
-1. Standard node groups, you can use these node groups for general purpose compute. 
-
-2. Node Groups with ILB, a standard node group + an internal load balancers that can be used to face other systems connected to the same VNET. 
-
-3. Node Groups with LB, a standard node group + external load balancers those can be used to ingest traffic from external sources (internet). 
-
-
-> All the templates in this repo use CoreOs, the scripts contain notes on how to use a different distro. Each node group can run it is own Linux distro. 
-
 ## Compartmentalization ##
 A center piece to this solution the ability to create compartments of nodes (node groups) Each can have the following characteristics:
 
@@ -61,6 +50,19 @@ A center piece to this solution the ability to create compartments of nodes (nod
 4. Use different Azure storage accounts. 
 
 5. Each is an Azure Availability Set that has its own fault and upgrade domains.
+
+
+## The repo contain the following node group types:##
+
+1. Standard node groups, you can use these node groups for general purpose compute. 
+
+2. Node Groups with ILB, a standard node group + an internal load balancers that can be used to face other systems connected to the same VNET. 
+
+3. Node Groups with LB, a standard node group + external load balancers those can be used to ingest traffic from external sources (internet). 
+
+
+> All the templates in this repo use CoreOs, the scripts contain notes on how to use a different distro. Each node group can run it is own Linux distro. 
+
 
 ## Capacity, Limits and Scale ##
 
