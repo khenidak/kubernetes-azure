@@ -168,7 +168,6 @@ After=docker.service
 Requires=docker.service 
 
 [Service] 
-
 ExecStart=/srv/kubernetes-server/bin/kube-proxy --master=http://10.0.0.4:8080
 
 [Install] 
