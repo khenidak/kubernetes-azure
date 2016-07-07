@@ -38,7 +38,7 @@ The above diagram depicts how a Kubernetes cluster will work on Azure. The follo
 - The address space 10.1.0.0/16 is reserved for Kubernetes services and 10.1.255.255 is reserved for Kubernets DNS (no subnet created for this address space).
 - Traffic can be ingested into the cluster via external load balancers, internal load balancers or reverse proxies such as nginx or Azure App Gateway.
 
-** The repo contain the following node group types: **
+**The repo contain the following node group types:**
 
 1. Standard node groups, you can use these node groups for general purpose compute. 
 
