@@ -1,0 +1,36 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"adminUsername": {"value": "azureuser"},
+		"sshKeyData": {
+			"value": "SSH-KEY-HERE"
+		},
+
+		"nodesPerGroupCount": {"value": 2},
+		"nodeGroupIndex" : {"value": 1},
+		
+
+		"computeApiVersion": {"value": "2016-03-30"},
+		"networkApiVersion": {"value": "2016-03-30"},
+		"storageApiVersion": {"value": "2015-06-15"},
+		"resourceApiVersion": {"value": "2015-01-01"},
+		
+		"clusterName": {"value": "my-kub-cluster03"},
+		"clusterNameClean": {"value": "mykubcluster03"},
+		"clusterVNETName": {"value": "mykubcluster03-vnet"},
+		"nodesStorageAccountprefix": {"value": "nmykubcluster03"},
+
+		"nodesSACount":  {"value": 5},
+
+		"baseTemplatesUri" : {"value": "https://raw.githubusercontent.com/khenidak/kubernetes-azure/master/"},
+		"templateCreateNode" : {"value": "create-node-lb.json"},
+
+		"sshKeyPath": {"value": "/home/azureuser/.ssh/authorized_keys"},
+		"nodesVMSku": {"value": "Standard_A1"},
+		"coreOSType" : {"value" : "CoreOS-Stable"},
+		"routingTableNameMain" : {"value" : "mykubcluster03-rTable"},
+		"groupDnsLabel" : {"value" : "kubcluster03in02"}
+	
+	}
+}
