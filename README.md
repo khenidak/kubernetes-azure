@@ -6,9 +6,11 @@ This repo contain Azure Resource Manager templates, scripts and tools that enabl
 
 By all means this is not the only way you can run Kubernetes on Azure. However this one follows the following principles
 1. Avoid additional platform dependencies, this deployment does not need network overlay such as Flannel, OVS or Weave traditionally needed by Kubernetes custom clusters refer to (http://kubernetes.io/docs/admin/networking/) for further details.
+
 2. Delegate platform management (such as adding node, load balancers) to platform own interfaces (ARM templates, Azure CLI, REST in this case). This approach does not depend on Kubernetes Cloud Provider Model. The following are the reasons:
 	- Kubernetes cloud provider is a common interface - highest common denominator - abstracting the underlying cloud resources. This means some of the features you may want in your cluster will not be available in the provider. And more importantly your architecture requirements might (likely will) be different than a common model (case in point internal vs external load balancers, or adding balancing rule vs add new load balancer, or adding Azure App Gateway vs Load Balancer). For further details on Kubernetes Cloud Model refer to (http://kubernetes.io/docs/getting-started-guides/#cloud)
 	- Kubernetes Cloud Providers follows Kubernetes own release cycle. Recent cloud innovations is not going to be a part of what you can use - assuming that the provider maintainer is including them -  until you upgrade the entire cluster (or work some trickery around that). Because public clouds such as Azure are moving fast (and likely not slow down soon) it is safe assumption that new features will be always introduced. These features will either make your implementation better, faster or cheaper and you would want to roll them out to your cluster as fast as possible.
+
 3. Create a cluster where you can easily compartmentalize groups of nodes by server type, specific subnet + routing rules or other factors.     
 
 
@@ -43,7 +45,7 @@ The above diagram depicts how a Kubernetes cluster will work on Azure. The follo
 
 > All the templates in this repo use CoreOs, the scripts contain notes on how to use a different distro. Each node group can run it is own Linux distro. 
 
-## Compartmentalization ## 
+## Compartmentalization ##
 A center piece to this solution the ability to create compartments of nodes (node groups) Each can have the following characteristics:
 1. Use its own H/W or OS (Linux distro)
 2. Isolated by Azure NSG for network lockdown.
