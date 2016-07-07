@@ -52,7 +52,8 @@ A center piece to this solution the ability to create compartments of nodes (nod
 5. Each is an Azure Availability Set that has its own fault and upgrade domains.
 
 
-## The repo contain the following node group types:##
+## Node Groups Types (in Repo) ##
+The following are node types included in the repo you can customize and/or create additional node group types as needed. 
 
 1. Standard node groups, you can use these node groups for general purpose compute. 
 
@@ -62,6 +63,8 @@ A center piece to this solution the ability to create compartments of nodes (nod
 
 
 > All the templates in this repo use CoreOs, the scripts contain notes on how to use a different distro. Each node group can run it is own Linux distro. 
+
+
 
 
 ## Capacity, Limits and Scale ##
