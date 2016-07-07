@@ -5,6 +5,7 @@ This repo contain Azure Resource Manager templates, scripts and tools that enabl
 # Motivation 
 
 By all means this is not the only way you can run Kubernetes on Azure. However this one follows the following principles
+
 1. Avoid additional platform dependencies, this deployment does not need network overlay such as Flannel, OVS or Weave traditionally needed by Kubernetes custom clusters refer to (http://kubernetes.io/docs/admin/networking/) for further details.
 
 2. Delegate platform management (such as adding node, load balancers) to platform own interfaces (ARM templates, Azure CLI, REST in this case). This approach does not depend on Kubernetes Cloud Provider Model. The following are the reasons:
