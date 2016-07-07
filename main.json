@@ -56,6 +56,17 @@
 		"nodesVMSku": {
 			"type": "string",
 			"defaultValue": "Standard_A1",
+			"allowedValues": [
+				"Standard_A1",
+                "Standard_D1",
+                "Standard_D2",
+                "Standard_D3",
+                "Standard_D4",
+                "Standard_D11",
+                "Standard_D12",
+                "Standard_D13",
+                "Standard_D14"
+            ],
 			"metadata": {
 				"description": "Size of VMs in the node group VM Scale Set."
 			}
@@ -65,6 +76,17 @@
 		"mastersVMSku": {
 			"type": "string",
 			"defaultValue": "Standard_A1",
+			"allowedValues": [
+				"Standard_A1",
+                "Standard_D1",
+                "Standard_D2",
+                "Standard_D3",
+                "Standard_D4",
+                "Standard_D11",
+                "Standard_D12",
+                "Standard_D13",
+                "Standard_D14"
+            ],
 			"metadata": {
 				"description": "Size of VMs in the VM Scale Set."
 			}

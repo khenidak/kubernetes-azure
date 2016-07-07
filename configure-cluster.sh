@@ -11,15 +11,15 @@ key_file="./keys/vmkey" # location for ssh key file
 config_masters="no"
 azure_user_name="azureuser" # user name to connect to the cluster
 
-masters_count="5" # number of masters in this cluster  
+masters_count=5 # number of masters in this cluster  
 
 
 
 #assuming you are always configure the last added node group or nodes
-node_group_start_idx=3
+node_group_start_idx=1
 node_in_group_start_idx=0
 
-node_group_count=4
+node_group_count=2
 nodes_per_group=2
 
 

@@ -38,7 +38,6 @@ echo  "Resolved CBR IP as ${CBR0_IP}"
 
 
 
-
 echo "+ downloading kubernetes"
 
 #- Get Kubernetes 
@@ -79,6 +78,7 @@ sudo ip addr add ${CBR0_IP} dev cbr0 #give it ip within the same subnet as the n
 # turn on masqarading for out going traffic 
 sudo iptables -t nat -A POSTROUTING ! -d 10.0.0.0/8 -m addrtype ! --dst-type LOCAL -j MASQUERADE
 sudo iptables -t nat -A POSTROUTING ! -d 11.0.0.0/8 -m addrtype ! --dst-type LOCAL -j MASQUERADE
+
 
 EOL
 
@@ -142,10 +142,8 @@ Description=Kubelet
 After=docker.service 
 Requires=docker.service 
 
-[Service] 
-
-TimeoutStartSec=5 
-ExecStart=/srv/kubernetes-server/bin/kubelet --api-servers=http://10.0.0.4:8080  
+[Service]
+ExecStart=/srv/kubernetes-server/bin/kubelet --api-servers=http://10.0.0.4:8080  --cluster-dns=10.1.255.254 --cluster-domain=cluster.local
 
 [Install] 
 WantedBy=multi-user.target
@@ -171,7 +169,6 @@ Requires=docker.service
 
 [Service] 
 
-TimeoutStartSec=5 
 ExecStart=/srv/kubernetes-server/bin/kube-proxy --master=http://10.0.0.4:8080
 
 [Install] 
