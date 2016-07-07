@@ -1,8 +1,9 @@
-# Traffic Ingestion # 
+# Traffic Ingestion #
 The following are supported models to ingest traffic into the cluster
 
 ## Via Load Balancers ##
 You can use internal load balancers or external load balancers to ingest traffic into the cluster. The model works as the following:
+
 1. Create or use existing node group (that has ilb/ or lb).
 2. Optional: pods that needs to be exposed externally can be anchored to this group type.
 3. Services exposed exposed externally are created with *type: NodePort* + fixed node ports in Kubernetes 30000-32767 range. There is no need to use privileged ports.
