@@ -39,8 +39,11 @@ The above diagram depicts how a Kubernetes cluster will work on Azure. The follo
 - Traffic can be ingested into the cluster via external load balancers, internal load balancers or reverse proxies such as nginx or Azure App Gateway.
 
 ** The repo contain the following node group types: **
+
 1. Standard node groups, you can use these node groups for general purpose compute. 
+
 2. Node Groups with ILB, a standard node group + an internal load balancers that can be used to face other systems connected to the same VNET. 
+
 3. Node Groups with LB, a standard node group + external load balancers those can be used to ingest traffic from external sources (internet). 
 
 
@@ -48,10 +51,15 @@ The above diagram depicts how a Kubernetes cluster will work on Azure. The follo
 
 ## Compartmentalization ##
 A center piece to this solution the ability to create compartments of nodes (node groups) Each can have the following characteristics:
+
 1. Use its own H/W or OS (Linux distro)
+
 2. Isolated by Azure NSG for network lockdown.
+
 3. Can be exposed internally or externally via Internal or External Load Balancers. Or directly via public Azure VIP.
+
 4. Use different Azure storage accounts. 
+
 5. Each is an Azure Availability Set that has its own fault and upgrade domains.
 
 ## Capacity, Limits and Scale ##
