@@ -4,7 +4,7 @@
 
 ### 1. Deploy Core Resources ###
 1. Deploy the main.json ARM template to your Azure Resource Group. This will create masters, node groups and nodes. 
-2. Modify then run configure-cluster.sh on your local machine.
+2. Modify then run configure-cluster.sh on your local machine (Modify the first section of the script that includes the parameters. *You will need to do that everytime you add a node or a node group).
 
 > The configuration script ssh into masters for configuration, then ssh into master-0 to configure nodes un-comment the last line to remove the ssh keys from master-0 
 
