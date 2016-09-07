@@ -134,7 +134,7 @@ echo "+ docker configured and started with the new options"
 
 
 sudo touch /etc/systemd/system/kubelet.service
-
+### DNS SERVER BELOW IS SET TO STATIC IP, MODIFY IF NEEDED
 
 cat << EOL | sudo tee --append /etc/systemd/system/kubelet.service
 [Unit]  
@@ -143,7 +143,7 @@ After=docker.service
 Requires=docker.service 
 
 [Service]
-ExecStart=/srv/kubernetes-server/bin/kubelet --api-servers=http://10.0.0.4:8080  --cluster-dns=10.1.255.255 --cluster-domain=cluster.local
+ExecStart=/srv/kubernetes-server/bin/kubelet --api-servers=http://10.0.0.4:8080  --cluster-dns=10.1.255.254 --cluster-domain=cluster.local
 
 [Install] 
 WantedBy=multi-user.target

@@ -19,6 +19,6 @@ spec:
         ports:
         - containerPort: 80
       nodeSelector:
-        nodegroup: "3" #Select node group that has Azure LB or ilb assigned to it
+        nodegroup: "0" #Select node group that has Azure LB or ilb assigned to it
 
 # you can also use node affinity http://kubernetes.io/docs/user-guide/node-selection/	alpha feature in kubernetes 1.2. (template installes 1.2.4)
